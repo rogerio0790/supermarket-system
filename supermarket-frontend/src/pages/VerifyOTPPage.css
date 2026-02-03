@@ -1,0 +1,160 @@
+.verify-otp-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+  padding: 20px;
+}
+
+.verify-otp-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.verify-otp-box {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  max-width: 450px;
+  width: 100%;
+  text-align: center;
+}
+
+.otp-logo {
+  margin-bottom: 30px;
+}
+
+.otp-logo .logo-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.otp-logo h1 {
+  color: #00c853;
+  margin: 0;
+  font-size: 24px;
+}
+
+.verify-otp-box h2 {
+  color: #333;
+  margin: 0 0 16px 0;
+  font-size: 24px;
+}
+
+.otp-instruction {
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.otp-instruction strong {
+  color: #00c853;
+  display: block;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border: 1px solid #ef9a9a;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 12px;
+  color: #333;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.otp-input {
+  width: 100%;
+  padding: 20px;
+  font-size: 32px;
+  text-align: center;
+  letter-spacing: 8px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-weight: 700;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.otp-input:focus {
+  outline: none;
+  border-color: #00c853;
+  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.1);
+}
+
+.btn-verify {
+  width: 100%;
+  padding: 16px;
+  background: #00c853;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-verify:hover:not(:disabled) {
+  background: #00b248;
+  transform: translateY(-2px);
+}
+
+.btn-verify:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.resend-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.resend-section p {
+  color: #666;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.btn-resend {
+  background: none;
+  border: none;
+  color: #00c853;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.btn-resend:hover:not(:disabled) {
+  color: #00b248;
+}
+
+.btn-resend:disabled {
+  color: #999;
+  cursor: not-allowed;
+  text-decoration: none;
+}

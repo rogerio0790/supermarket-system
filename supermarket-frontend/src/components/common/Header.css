@@ -1,14 +1,17 @@
 :root {
-  --primary-color: #27ae60;
-  --primary-dark: #219150;
-  --text-main: #2c3e50;
-  --text-light: #7f8c8d;
-  --bg-light: #f8f9fa;
-  --border-color: #ecf0f1;
+  --primary-color: #067d38;
+  --primary-dark: #04632c;
+  --primary-light: #e8f5e9;
+  --text-main: #111111;
+  --text-light: #565959;
+  --bg-light: #f3f3f3;
+  --border-color: #D5D9D9;
   --white: #ffffff;
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 8px 0 rgba(0,0,0,0.1);
+  --transition: all 0.2s ease-in-out;
+  --amazon-orange: #FF9900;
+  --amazon-yellow: #febd69;
 }
 
 .site-header {
@@ -79,8 +82,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(39, 174, 96, 0.2);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
 }
 
 .logo-icon {
@@ -113,17 +116,17 @@
 
 .search-bar {
   display: flex;
-  background: var(--bg-light);
+  background: var(--white);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
   transition: var(--transition);
+  box-shadow: var(--shadow-sm);
 }
 
 .search-bar:focus-within {
-  border-color: var(--primary-color);
-  background: var(--white);
-  box-shadow: 0 0 0 4px rgba(39, 174, 96, 0.1);
+  border-color: var(--amazon-orange);
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.2);
 }
 
 .search-bar input {
@@ -222,21 +225,20 @@
 }
 
 .btn-signup {
-  background: var(--primary-color);
-  color: var(--white);
-  border: none;
+  background: var(--amazon-yellow);
+  color: var(--text-main);
+  border: 1px solid #a88734;
   padding: 10px 24px;
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   transition: var(--transition);
 }
 
 .btn-signup:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+  background: #f7ca00;
+  border-color: #a88734;
 }
 
 .btn-logout {

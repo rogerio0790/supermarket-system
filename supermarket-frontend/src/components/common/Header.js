@@ -41,7 +41,7 @@ function Header() {
 
   const isActive = (path) => {
     if (path === '/products') {
-      return location.pathname === '/products' && !location.search;
+      return location.pathname === '/products' && (!location.search || location.search === '?category=all');
     }
     return location.pathname + location.search === path;
   };
@@ -148,7 +148,7 @@ function Header() {
         <div className="header-container">
           <ul className="category-menu">
             <li className="category-item-all">
-              <Link to="/products" className={isActive('/products') ? 'active' : ''}>
+              <Link to="/products?category=all" className={isActive('/products') ? 'active' : ''}>
                 <span className="all-icon">☰</span> All Departments
               </Link>
             </li>

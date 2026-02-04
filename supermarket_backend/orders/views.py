@@ -29,7 +29,7 @@ class OrderDetailView(generics.RetrieveAPIView):
     
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'order_number'
+    lookup_field = 'pk'
     
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user).prefetch_related('items')
@@ -68,7 +68,8 @@ class CreateOrderView(APIView):
             subtotal=subtotal,
             delivery_fee=delivery_fee,
             total=total,
-            notes=serializer.validated_data.get('notes', '')
+            notes=serializer.validated_data.get('notes', ''),
+            payment_method=serializer.validated_data.get('payment_method', 'cash_on_delivery')
         )
         
         # Create order items and update product stock

@@ -15,6 +15,18 @@ function Header() {
   const [authMode, setAuthMode] = useState('login');
   const [categories, setCategories] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -60,6 +72,13 @@ function Header() {
           </nav>
           <div className="top-bar-right">
             <span className="delivery-info">🚚 Free delivery on orders over $50</span>
+            <button 
+              className="theme-toggle" 
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDarkMode ? '☀️' : '🌙'}
+            </button>
           </div>
         </div>
       </div>

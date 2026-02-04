@@ -11,6 +11,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
+import AccountPage from './pages/AccountPage';
 import Footer from './components/common/Footer';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
+                <Route path="/account" element={<AccountPage />} />
               </Routes>
             </main>
             <Footer />

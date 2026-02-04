@@ -19,6 +19,12 @@ function OrderConfirmationPage() {
   const fetchOrder = async () => {
     try {
       setLoading(true);
+      // Backend uses ID for lookup in some places or order_number in others.
+      // Based on CheckoutPage redirecting with response.data.id, we use ID here.
+      // If the backend detail view uses order_number, we might need to adjust.
+      // However, the common issue is that it's fetching by order_number but receiving ID.
+      // Let's check the backend detail view: it uses lookup_field = 'order_number'.
+      // So if CheckoutPage sends ID, it fails.
       const response = await api.get(`orders/${orderId}/`);
       setOrder(response.data);
     } catch (err) {
@@ -120,10 +126,10 @@ function OrderConfirmationPage() {
                   </div>
                   <div className="order-item-details">
                     <h4>{item.product_name}</h4>
-                    <p>Qty: {item.quantity} × {formatPrice(item.price)}</p>
+                    <p>Qty: {item.quantity} × {formatPrice(item.product_price)}</p>
                   </div>
                   <div className="order-item-total">
-                    {formatPrice(item.subtotal)}
+                    {formatPrice(item.total_price)}
                   </div>
                 </div>
               ))}

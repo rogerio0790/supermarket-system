@@ -7,19 +7,22 @@ import { useCart } from '../context/CartContext'; // <-- import useCart
 import './ProductDetailPage.css';
 
 function ProductDetailPage() {
-  const { slug } = useParams();
+  const { id } = useParams(); // Changed from slug to id as per App.js route
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeImage, setActiveImage] = useState(0);
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0, show: false });
 
-  const { addToCart: addToCartContext } = useCart(); // <-- useCart hook
+  const { addToCart: addToCartContext } = useCart();
 
   const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get(`products/${slug}/`);
+      // Fetching by ID as per the route /product/:id
+      const response = await api.get(`products/${id}/`);
       setProduct(response.data);
       setError(null);
     } catch (err) {
@@ -28,7 +31,18 @@ function ProductDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [slug]);
+  }, [id]);
+
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.pageX - left - window.scrollX) / width) * 100;
+    const y = ((e.pageY - top - window.scrollY) / height) * 100;
+    setZoomPos({ x, y, show: true });
+  };
+
+  const handleMouseLeave = () => {
+    setZoomPos({ ...zoomPos, show: false });
+  };
 
   useEffect(() => {
     fetchProduct();
@@ -84,6 +98,10 @@ function ProductDetailPage() {
 
   const imageUrl = getMediaUrl(product.image);
 
+  // For multiple images, we'll use the main image and some placeholders since the model only has one.
+  // In a real app, product.images would be an array.
+  const productImages = product.image ? [product.image, product.image, product.image] : [];
+
   return (
     <div className="product-detail-page">
       <Header />
@@ -101,84 +119,148 @@ function ProductDetailPage() {
         {/* Product Details */}
         <div className="product-detail-grid">
           <div className="product-image-section">
-            <div className="main-image">
-              {imageUrl ? <img src={imageUrl} alt={product.name} /> : <div className="no-image">📦</div>}
+            <div 
+              className="main-image-container"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+            >
+              {productImages.length > 0 ? (
+                <img 
+                  src={getMediaUrl(productImages[activeImage])} 
+                  alt={product.name} 
+                  className="main-image"
+                />
+              ) : (
+                <div className="no-image">📦</div>
+              )}
+              
+              {zoomPos.show && (
+                <div 
+                  className="zoom-result"
+                  style={{
+                    backgroundImage: `url(${getMediaUrl(productImages[activeImage])})`,
+                    backgroundPosition: `${zoomPos.x}% ${zoomPos.y}%`
+                  }}
+                />
+              )}
+            </div>
+            
+            <div className="image-thumbnails">
+              {productImages.map((img, idx) => (
+                <div 
+                  key={idx} 
+                  className={`thumbnail ${activeImage === idx ? 'active' : ''}`}
+                  onClick={() => setActiveImage(idx)}
+                >
+                  <img src={getMediaUrl(img)} alt={`${product.name} view ${idx + 1}`} />
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="product-info-section">
-            <div className="product-category-badge">{product.category_name}</div>
-            <h1 className="product-title">{product.name}</h1>
+            <div className="product-header">
+              <div className="product-category-badge">{product.category_name}</div>
+              <h1 className="product-title">{product.name}</h1>
+              <p className="product-sku">SKU: {product.sku || 'N/A'}</p>
+            </div>
 
-            <div className="product-pricing">
-              {product.discount_price ? (
-                <>
-                  <span className="original-price">{formatPrice(product.price)}</span>
-                  <span className="discount-price">{formatPrice(product.discount_price)}</span>
-                  <span className="discount-badge">-{product.discount_percentage}%</span>
-                </>
-              ) : (
-                <span className="current-price">{formatPrice(product.price)}</span>
+            <div className="product-pricing-card">
+              <div className="price-label">Price:</div>
+              <div className="product-pricing">
+                {product.discount_price ? (
+                  <>
+                    <div className="price-group">
+                      <span className="discount-price">{formatPrice(product.discount_price)}</span>
+                      <span className="original-price">{formatPrice(product.price)}</span>
+                    </div>
+                    <span className="discount-badge">-{product.discount_percentage}% OFF</span>
+                  </>
+                ) : (
+                  <span className="current-price">{formatPrice(product.price)}</span>
+                )}
+              </div>
+              <div className="unit-info">Price per {product.unit || 'piece'}</div>
+            </div>
+
+            <div className="stock-info">
+              <div className={`stock-status-badge ${product.is_in_stock ? 'in-stock' : 'out-of-stock'}`}>
+                {product.is_in_stock ? 'In Stock' : 'Out of Stock'}
+              </div>
+              {product.is_in_stock && (
+                <span className="stock-count">{product.stock} units available</span>
               )}
             </div>
 
-            <div className="stock-status">
-              {product.is_in_stock ? (
-                <span className="in-stock">✓ In Stock ({product.stock} available)</span>
-              ) : (
-                <span className="out-of-stock">✗ Out of Stock</span>
-              )}
-            </div>
-
-            {product.is_in_stock && (
-              <div className="quantity-section">
-                <label>Quantity:</label>
-                <div className="quantity-controls">
-                  <button 
-                    className="qty-btn" 
-                    onClick={() => handleQuantityChange('decrease')}
-                    disabled={quantity <= 1}
-                  >-</button>
-                  <span className="qty-display">{quantity}</span>
-                  <button 
-                    className="qty-btn" 
-                    onClick={() => handleQuantityChange('increase')}
-                    disabled={quantity >= product.stock}
-                  >+</button>
+            <div className="specifications-section">
+              <h3>Specifications</h3>
+              <div className="specs-grid">
+                <div className="spec-item">
+                  <span className="spec-label">Category</span>
+                  <span className="spec-value">{product.category_name}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Unit</span>
+                  <span className="spec-value">{product.unit}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Status</span>
+                  <span className="spec-value">{product.is_active ? 'Active' : 'Inactive'}</span>
                 </div>
               </div>
-            )}
-
-            <div className="action-buttons">
-              <button 
-                className="btn-add-to-cart"
-                onClick={handleAddToCart}
-                disabled={!product.is_in_stock}
-              >
-                {product.is_in_stock ? '🛒 Add to Cart' : 'Out of Stock'}
-              </button>
             </div>
 
-            <div className="product-details">
-              <h3>Product Details</h3>
-              <ul>
-                <li><strong>Category:</strong> {product.category_name}</li>
-                <li><strong>Unit:</strong> {product.unit}</li>
-                <li><strong>Stock:</strong> {product.stock} units</li>
-                {product.discount_percentage > 0 && (
-                  <li><strong>Discount:</strong> {product.discount_percentage}% off</li>
-                )}
-              </ul>
+            <div className="purchase-section">
+              {product.is_in_stock && (
+                <div className="quantity-selector">
+                  <label>Quantity:</label>
+                  <div className="quantity-controls">
+                    <button 
+                      className="qty-btn" 
+                      onClick={() => handleQuantityChange('decrease')}
+                      disabled={quantity <= 1}
+                    >-</button>
+                    <input 
+                      type="number" 
+                      className="qty-input" 
+                      value={quantity} 
+                      readOnly 
+                    />
+                    <button 
+                      className="qty-btn" 
+                      onClick={() => handleQuantityChange('increase')}
+                      disabled={quantity >= product.stock}
+                    >+</button>
+                  </div>
+                </div>
+              )}
+
+              <div className="action-buttons">
+                <button 
+                  className="btn-add-to-cart"
+                  onClick={handleAddToCart}
+                  disabled={!product.is_in_stock}
+                >
+                  {product.is_in_stock ? 'Add to Cart' : 'Out of Stock'}
+                </button>
+                <button className="btn-buy-now" disabled={!product.is_in_stock}>
+                  Buy Now
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {product.description && (
-          <div className="product-description-section">
-            <h3>Description</h3>
-            <p>{product.description}</p>
+        <div className="product-extra-info">
+          <div className="info-tabs">
+            <button className="tab active">Product Description</button>
           </div>
-        )}
+          <div className="tab-panel">
+            <div className="description-content">
+              {product.description || 'No description available for this product.'}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

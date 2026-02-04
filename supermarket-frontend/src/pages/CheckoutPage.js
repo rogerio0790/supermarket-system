@@ -10,7 +10,7 @@ import './CheckoutPage.css';
 function CheckoutPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { cart, loading: cartLoading } = useCart();
+  const { cart, loading: cartLoading, clearCart } = useCart();
 
   const [deliveryInfo, setDeliveryInfo] = useState({
     delivery_address: '',
@@ -115,7 +115,10 @@ function CheckoutPage() {
       const response = await api.post('orders/create/', orderData);
 
       console.log('Order response:', response.data);
-
+      
+      // Clear cart context after successful order
+      await clearCart();
+      
       navigate(`/order-confirmation/${response.data.id}`);
     } catch (err) {
       console.error('Order placement error:', err);

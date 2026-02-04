@@ -1,0 +1,156 @@
+.account-page {
+  background-color: var(--secondary-bg);
+  min-height: 100vh;
+}
+
+.account-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  color: var(--text-color);
+}
+
+.account-container h1 {
+  margin-bottom: 30px;
+  color: var(--text-color);
+  font-size: 28px;
+  text-align: center;
+}
+
+.account-tabs {
+  display: flex;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 30px;
+}
+
+.account-tabs button {
+  flex: 1;
+  padding: 15px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.account-tabs button.active {
+  color: #067d38;
+  border-bottom-color: #067d38;
+}
+
+.account-tabs button:hover:not(.active) {
+  color: #333;
+  background-color: #f9f9f9;
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.form-group input, 
+.form-group textarea {
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+  outline: none;
+  border-color: #067d38;
+  box-shadow: 0 0 0 2px rgba(6, 125, 56, 0.1);
+}
+
+.disabled-input {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  color: #888;
+}
+
+.btn-save {
+  margin-top: 10px;
+  padding: 14px;
+  background-color: #067d38;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-save:hover {
+  background-color: #04632c;
+}
+
+.btn-save:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.message-banner {
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.message-banner.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.message-banner.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .account-container {
+    margin: 20px;
+    padding: 20px;
+  }
+}

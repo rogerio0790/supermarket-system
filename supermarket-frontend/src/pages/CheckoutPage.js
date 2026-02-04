@@ -14,8 +14,9 @@ function CheckoutPage() {
 
   const [deliveryInfo, setDeliveryInfo] = useState({
     delivery_address: '',
-    delivery_phone: user?.phone || '',
-    delivery_notes: '',
+    delivery_city: 'Musanze', // Default city as per business location
+    phone_number: user?.phone || '',
+    notes: '',
   });
 
   const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
@@ -88,7 +89,12 @@ function CheckoutPage() {
       return;
     }
 
-    if (!deliveryInfo.delivery_phone.trim()) {
+    if (!deliveryInfo.delivery_city.trim()) {
+      setError('Please enter a delivery city');
+      return;
+    }
+
+    if (!deliveryInfo.phone_number.trim()) {
       setError('Please enter a delivery phone number');
       return;
     }
@@ -98,8 +104,9 @@ function CheckoutPage() {
 
       const orderData = {
         delivery_address: deliveryInfo.delivery_address,
-        delivery_phone: deliveryInfo.delivery_phone,
-        delivery_notes: deliveryInfo.delivery_notes,
+        delivery_city: deliveryInfo.delivery_city,
+        phone_number: deliveryInfo.phone_number,
+        notes: deliveryInfo.notes,
         payment_method: paymentMethod,
       };
 
@@ -154,11 +161,22 @@ function CheckoutPage() {
                 </div>
 
                 <div className="form-group">
+                  <label>Delivery City *</label>
+                  <input
+                    type="text"
+                    name="delivery_city"
+                    value={deliveryInfo.delivery_city}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
                   <label>Delivery Phone *</label>
                   <input
                     type="tel"
-                    name="delivery_phone"
-                    value={deliveryInfo.delivery_phone}
+                    name="phone_number"
+                    value={deliveryInfo.phone_number}
                     onChange={handleInputChange}
                     required
                   />
@@ -167,8 +185,8 @@ function CheckoutPage() {
                 <div className="form-group">
                   <label>Delivery Notes (Optional)</label>
                   <textarea
-                    name="delivery_notes"
-                    value={deliveryInfo.delivery_notes}
+                    name="notes"
+                    value={deliveryInfo.notes}
                     onChange={handleInputChange}
                     rows="2"
                   />

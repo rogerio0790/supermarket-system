@@ -142,19 +142,19 @@
 }
 
 .original-price {
-  font-size: 20px;
+  font-size: 16px;
   color: #999;
   text-decoration: line-through;
 }
 
 .discount-price {
-  font-size: 36px;
+  font-size: 28px;
   font-weight: 700;
   color: #00c853;
 }
 
 .current-price {
-  font-size: 36px;
+  font-size: 28px;
   font-weight: 700;
   color: #333;
 }
@@ -335,6 +335,6 @@
 
   .discount-price,
   .current-price {
-    font-size: 28px;
+    font-size: 24px;
   }
 }

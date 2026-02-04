@@ -273,3 +273,9 @@
   color: #666;
   letter-spacing: 0.3px;
 }
+.btn-text {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}

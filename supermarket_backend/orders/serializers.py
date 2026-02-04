@@ -5,6 +5,8 @@ from products.models import Product
 
 class OrderItemSerializer(serializers.ModelSerializer):
     """Serializer for order items"""
+
+    product_image = serializers.SerializerMethodField()
     
     class Meta:
         model = OrderItem
@@ -13,9 +15,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
             'product',
             'product_name',
             'product_price',
+            'product_image',
             'quantity',
             'total_price'
         ]
+
+    def get_product_image(self, obj):
+        if obj.product and obj.product.image:
+            return obj.product.image.url
+        return None
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -25,6 +33,9 @@ class OrderSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_name = serializers.CharField(source='user.full_name', read_only=True)
     total_items = serializers.IntegerField(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    payment_status_display = serializers.CharField(source='get_payment_status_display', read_only=True)
+    payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
     
     class Meta:
         model = Order
@@ -35,7 +46,11 @@ class OrderSerializer(serializers.ModelSerializer):
             'user_email',
             'user_name',
             'status',
+            'status_display',
             'payment_status',
+            'payment_status_display',
+            'payment_method',
+            'payment_method_display',
             'delivery_address',
             'delivery_city',
             'phone_number',
@@ -66,6 +81,10 @@ class CreateOrderSerializer(serializers.Serializer):
     delivery_address = serializers.CharField(max_length=500)
     delivery_city = serializers.CharField(max_length=100)
     phone_number = serializers.CharField(max_length=15)
+    payment_method = serializers.ChoiceField(
+        choices=Order.PAYMENT_METHOD_CHOICES,
+        default='cash_on_delivery'
+    )
     delivery_fee = serializers.DecimalField(max_digits=10, decimal_places=2, default=0)
     notes = serializers.CharField(required=False, allow_blank=True)
     

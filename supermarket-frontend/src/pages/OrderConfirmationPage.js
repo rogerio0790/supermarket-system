@@ -6,7 +6,7 @@ import api from '../api/axios';
 import './OrderConfirmationPage.css';
 
 function OrderConfirmationPage() {
-  const { orderId } = useParams();
+  const { orderId: orderNumber } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,12 +14,12 @@ function OrderConfirmationPage() {
 
   useEffect(() => {
     fetchOrder();
-  }, [orderId]);
+  }, [orderNumber]);
 
   const fetchOrder = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`orders/${orderId}/`);
+      const response = await api.get(`orders/${orderNumber}/`);
       setOrder(response.data);
     } catch (err) {
       console.error('Error fetching order:', err);
@@ -57,6 +57,7 @@ function OrderConfirmationPage() {
     );
   }
 
+  const statusClass = order?.status ? order.status.toLowerCase() : 'pending';
   return (
     <div className="order-confirmation-page">
       <Header />
@@ -83,8 +84,8 @@ function OrderConfirmationPage() {
               </p>
             </div>
             <div className="order-status">
-              <span className={`status-badge ${order.status}`}>
-                {order.status_display}
+              <span className={`status-badge ${statusClass}`}>
+                {order.status_display || order.status}
               </span>
             </div>
           </div>
@@ -92,6 +93,8 @@ function OrderConfirmationPage() {
           <div className="order-info-grid">
             <div className="info-section">
               <h3>Delivery Information</h3>
+              <p><strong>Customer:</strong> {order.user_name || 'Valued Customer'}</p>
+              <p><strong>Email:</strong> {order.user_email || 'N/A'}</p>
               <p><strong>Address:</strong> {order.delivery_address}</p>
               <p><strong>Phone:</strong> {order.phone_number}</p>
               {order.notes && (
@@ -101,8 +104,9 @@ function OrderConfirmationPage() {
 
             <div className="info-section">
               <h3>Payment Information</h3>
-              <p><strong>Method:</strong> {order.payment_method_display}</p>
-              <p><strong>Status:</strong> {order.payment_status_display}</p>
+              <p><strong>Method:</strong> {order.payment_method_display || order.payment_method}</p>
+              <p><strong>Status:</strong> {order.payment_status_display || order.payment_status}</p>
+              <p><strong>Total Items:</strong> {order.total_items}</p>
             </div>
           </div>
 
@@ -120,10 +124,10 @@ function OrderConfirmationPage() {
                   </div>
                   <div className="order-item-details">
                     <h4>{item.product_name}</h4>
-                    <p>Qty: {item.quantity} × {formatPrice(item.price)}</p>
+                    <p>Qty: {item.quantity} × {formatPrice(item.product_price)}</p>
                   </div>
                   <div className="order-item-total">
-                    {formatPrice(item.subtotal)}
+                    {formatPrice(item.total_price)}
                   </div>
                 </div>
               ))}
@@ -135,15 +139,9 @@ function OrderConfirmationPage() {
               <span>Subtotal</span>
               <span>{formatPrice(order.subtotal)}</span>
             </div>
-            {order.discount > 0 && (
-              <div className="total-row discount">
-                <span>Discount</span>
-                <span>-{formatPrice(order.discount)}</span>
-              </div>
-            )}
             <div className="total-row">
               <span>Delivery Fee</span>
-              <span>FREE</span>
+              <span>{order.delivery_fee > 0 ? formatPrice(order.delivery_fee) : 'FREE'}</span>
             </div>
             <div className="total-row grand-total">
               <span>Total</span>

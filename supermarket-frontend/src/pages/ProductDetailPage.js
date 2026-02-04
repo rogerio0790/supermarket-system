@@ -11,6 +11,8 @@ function ProductDetailPage() {
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState('');
+  const [zoomStyle, setZoomStyle] = useState({ backgroundPosition: 'center' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -33,6 +35,16 @@ function ProductDetailPage() {
   useEffect(() => {
     fetchProduct();
   }, [fetchProduct]);
+
+  useEffect(() => {
+    if (product?.images?.length) {
+      setSelectedImage(getMediaUrl(product.images[0]));
+      return;
+    }
+    if (product?.image) {
+      setSelectedImage(getMediaUrl(product.image));
+    }
+  }, [product]);
 
   const handleQuantityChange = (action) => {
     if (action === 'increase') {
@@ -83,6 +95,18 @@ function ProductDetailPage() {
   }
 
   const imageUrl = getMediaUrl(product.image);
+  const galleryImages = product.images?.length
+    ? product.images.map((image) => getMediaUrl(image))
+    : imageUrl
+      ? [imageUrl]
+      : [];
+
+  const handleZoomMove = (event) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - bounds.left) / bounds.width) * 100;
+    const y = ((event.clientY - bounds.top) / bounds.height) * 100;
+    setZoomStyle({ backgroundPosition: `${x}% ${y}%` });
+  };
 
   return (
     <div className="product-detail-page">
@@ -101,9 +125,35 @@ function ProductDetailPage() {
         {/* Product Details */}
         <div className="product-detail-grid">
           <div className="product-image-section">
-            <div className="main-image">
-              {imageUrl ? <img src={imageUrl} alt={product.name} /> : <div className="no-image">📦</div>}
+            <div
+              className="main-image zoom-frame"
+              style={{
+                backgroundImage: selectedImage ? `url(${selectedImage})` : 'none',
+                ...zoomStyle
+              }}
+              onMouseMove={handleZoomMove}
+              onMouseLeave={() => setZoomStyle({ backgroundPosition: 'center' })}
+            >
+              {selectedImage ? (
+                <img src={selectedImage} alt={product.name} />
+              ) : (
+                <div className="no-image">📦</div>
+              )}
             </div>
+            {galleryImages.length > 0 && (
+              <div className="thumbnail-row">
+                {galleryImages.map((image, index) => (
+                  <button
+                    key={`${image}-${index}`}
+                    type="button"
+                    className={`thumbnail-button ${selectedImage === image ? 'active' : ''}`}
+                    onClick={() => setSelectedImage(image)}
+                  >
+                    <img src={image} alt={`${product.name} thumbnail ${index + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="product-info-section">
@@ -120,6 +170,24 @@ function ProductDetailPage() {
               ) : (
                 <span className="current-price">{formatPrice(product.price)}</span>
               )}
+            </div>
+
+            <div className="price-details-card">
+              <h4>Price Details</h4>
+              <div className="price-line">
+                <span>List Price</span>
+                <span>{formatPrice(product.price)}</span>
+              </div>
+              {product.discount_price && (
+                <div className="price-line discount">
+                  <span>Discounted Price</span>
+                  <span>{formatPrice(product.discount_price)}</span>
+                </div>
+              )}
+              <div className="price-line">
+                <span>Unit</span>
+                <span>{product.unit}</span>
+              </div>
             </div>
 
             <div className="stock-status">
@@ -173,12 +241,23 @@ function ProductDetailPage() {
           </div>
         </div>
 
-        {product.description && (
+        <div className="product-specs-grid">
           <div className="product-description-section">
-            <h3>Description</h3>
+            <h3>Full Description</h3>
             <p>{product.description}</p>
           </div>
-        )}
+          <div className="product-specs-section">
+            <h3>Specifications</h3>
+            <ul>
+              <li><strong>SKU:</strong> {product.sku}</li>
+              <li><strong>Category:</strong> {product.category_name}</li>
+              <li><strong>Unit:</strong> {product.unit}</li>
+              <li><strong>Availability:</strong> {product.is_in_stock ? 'In Stock' : 'Out of Stock'}</li>
+              <li><strong>Stock:</strong> {product.stock} units</li>
+              <li><strong>Last Updated:</strong> {new Date(product.updated_at).toLocaleDateString('en-US')}</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );

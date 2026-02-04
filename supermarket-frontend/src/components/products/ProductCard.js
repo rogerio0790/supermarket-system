@@ -12,35 +12,30 @@ function ProductCard({ product }) {
   const navigate = useNavigate();
 
   const handleAddToCart = async (e) => {
-  e.preventDefault(); // Prevent navigation to product detail
-  e.stopPropagation(); // Stop event bubbling
-  
-  console.log('Add to cart clicked for product:', product.id); // ADD THIS
-  
-  if (!user) {
-    alert('Please login to add items to cart');
-    navigate('/login');
-    return;
-  }
+    e.preventDefault(); // Prevent navigation to product detail
+    e.stopPropagation(); // Stop event bubbling
+    
+    if (!user) {
+      alert('Please login to add items to cart');
+      navigate('/login');
+      return;
+    }
 
-  if (!product.is_in_stock) {
-    alert('This product is out of stock');
-    return;
-  }
+    if (!product.is_in_stock) {
+      alert('This product is out of stock');
+      return;
+    }
 
-  console.log('Calling addToCart...'); // ADD THIS
-  const result = await addToCart(product.id, 1);
-  console.log('AddToCart result:', result); // ADD THIS
-  
-  if (result.success) {
-    alert('Product added to cart!');
-  } else {
-    console.error('Failed to add to cart:', result.error); // ADD THIS
-    alert('Failed to add to cart. Please try again.');
-  }
-};
+    const result = await addToCart(product.id, 1);
+    
+    if (result.success) {
+      alert('Product added to cart!');
+    } else {
+      alert('Failed to add to cart. Please try again.');
+    }
+  };
   return (
-    <Link to={`/product/${product.id}`} className="product-card">
+    <Link to={`/product/${product.slug}`} className="product-card">
       <div className="product-image">
         {imageUrl ? (
           <img src={imageUrl} alt={product.name} />

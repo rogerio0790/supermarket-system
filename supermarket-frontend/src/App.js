@@ -11,6 +11,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
+import AccountPage from './pages/AccountPage';
 import Footer from './components/common/Footer';
 
 function App() {
@@ -26,10 +27,11 @@ function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/verify-otp" element={<VerifyOTPPage />} />
                 <Route path="/products" element={<ProductListPage />} />
-                <Route path="/product/:id" element={<ProductDetailPage />} />
+                <Route path="/product/:slug" element={<ProductDetailPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
+                <Route path="/account" element={<AccountPage />} />
               </Routes>
             </main>
             <Footer />

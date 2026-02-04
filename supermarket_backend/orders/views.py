@@ -65,6 +65,7 @@ class CreateOrderView(APIView):
             delivery_address=serializer.validated_data['delivery_address'],
             delivery_city=serializer.validated_data['delivery_city'],
             phone_number=serializer.validated_data['phone_number'],
+            payment_method=serializer.validated_data.get('payment_method', 'cash_on_delivery'),
             subtotal=subtotal,
             delivery_fee=delivery_fee,
             total=total,

@@ -110,18 +110,10 @@ function CheckoutPage() {
         payment_method: paymentMethod,
       };
 
-      console.log('Sending order data:', orderData);
-
       const response = await api.post('orders/create/', orderData);
 
-      console.log('Order response:', response.data);
-
-      navigate(`/order-confirmation/${response.data.id}`);
+      navigate(`/order-confirmation/${response.data.order_number}`);
     } catch (err) {
-      console.error('Order placement error:', err);
-      console.error('Error response:', err.response?.data);
-      console.error('Error status:', err.response?.status);
-
       setError(
         err.response?.data?.error ||
         err.response?.data?.detail ||
@@ -246,10 +238,10 @@ function CheckoutPage() {
             {cart.items.map((item) => (
               <div key={item.id} className="summary-item">
                 <div className="summary-item-image">
-                  {item.product_image ? (
+                  {item.product?.image ? (
                     <img
-                      src={getMediaUrl(item.product_image)}
-                      alt={item.product_name}
+                      src={getMediaUrl(item.product.image)}
+                      alt={item.product?.name}
                     />
                   ) : (
                     <div className="no-image">📦</div>
@@ -257,14 +249,14 @@ function CheckoutPage() {
                 </div>
 
                 <div className="summary-item-details">
-                  <h4>{item.product_name}</h4>
+                  <h4>{item.product?.name}</h4>
                   <p>
-                    Qty: {item.quantity} × {formatPrice(item.price)}
+                    Qty: {item.quantity} × {formatPrice(item.product?.final_price)}
                   </p>
                 </div>
 
                 <div className="summary-item-total">
-                  {formatPrice(item.subtotal)}
+                  {formatPrice(item.total_price)}
                 </div>
               </div>
             ))}

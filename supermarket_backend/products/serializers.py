@@ -54,6 +54,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     
     category_name = serializers.CharField(source='category.name', read_only=True)
     category_slug = serializers.CharField(source='category.slug', read_only=True)
+    images = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -66,6 +67,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'category_name',
             'category_slug',
             'image',
+            'images',
             'price',
             'discount_price',
             'final_price',
@@ -78,3 +80,12 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at'
         ]
+
+    def get_images(self, obj):
+        images = []
+        if obj.image:
+            images.append(obj.image.url)
+        for gallery_image in obj.gallery_images.all():
+            if gallery_image.image:
+                images.append(gallery_image.image.url)
+        return images

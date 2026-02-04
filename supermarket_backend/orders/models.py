@@ -22,6 +22,12 @@ class Order(models.Model):
         ('FAILED', 'Failed'),
         ('REFUNDED', 'Refunded'),
     )
+
+    PAYMENT_METHOD_CHOICES = (
+        ('cash_on_delivery', 'Cash on Delivery'),
+        ('mobile_money', 'Mobile Money'),
+        ('card', 'Card'),
+    )
     
     # Order identification
     order_number = models.CharField(max_length=100, unique=True, editable=False)
@@ -34,6 +40,11 @@ class Order(models.Model):
     # Order status
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING')
+    payment_method = models.CharField(
+        max_length=30,
+        choices=PAYMENT_METHOD_CHOICES,
+        default='cash_on_delivery'
+    )
     
     # Delivery information
     delivery_address = models.TextField()

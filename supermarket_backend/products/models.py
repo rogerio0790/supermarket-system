@@ -106,3 +106,23 @@ class Product(models.Model):
         if self.discount_price and self.discount_price < self.price:
             return round(((self.price - self.discount_price) / self.price) * 100)
         return 0
+
+
+class ProductImage(models.Model):
+    """Additional product images"""
+    
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='gallery_images'
+    )
+    image = models.ImageField(upload_to='products/gallery/')
+    alt_text = models.CharField(max_length=200, blank=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['sort_order', 'id']
+    
+    def __str__(self):
+        return f"{self.product.name} image {self.id}"

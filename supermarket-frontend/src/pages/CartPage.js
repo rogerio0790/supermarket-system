@@ -88,17 +88,17 @@ function CartPage() {
           <div className="cart-items">
             {cart.items.map((item) => (
               <div key={item.id} className="cart-item">
-                <div className="item-image" onClick={() => navigate(`/product/${item.product_id}`)}>
-                  {item.product_image ? (
-                    <img src={getMediaUrl(item.product_image)} alt={item.product_name} />
+                <div className="item-image" onClick={() => navigate(`/product/${item.product?.slug}`)}>
+                  {item.product?.image ? (
+                    <img src={getMediaUrl(item.product.image)} alt={item.product?.name} />
                   ) : (
                     <div className="no-image">📦</div>
                   )}
                 </div>
 
                 <div className="item-details">
-                  <h3 onClick={() => navigate(`/product/${item.product_id}`)}>{item.product_name}</h3>
-                  <p className="item-price">{formatPrice(item.price)} per unit</p>
+                  <h3 onClick={() => navigate(`/product/${item.product?.slug}`)}>{item.product?.name}</h3>
+                  <p className="item-price">{formatPrice(item.product?.final_price)} per unit</p>
                 </div>
 
                 <div className="item-quantity">
@@ -115,7 +115,7 @@ function CartPage() {
                 </div>
 
                 <div className="item-total">
-                  <p className="total-price">{formatPrice(item.subtotal)}</p>
+                  <p className="total-price">{formatPrice(item.total_price)}</p>
                 </div>
 
                 <button className="btn-remove" onClick={() => handleRemove(item.id)}>

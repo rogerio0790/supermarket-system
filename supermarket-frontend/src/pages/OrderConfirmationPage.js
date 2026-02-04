@@ -93,9 +93,9 @@ function OrderConfirmationPage() {
             <div className="info-section">
               <h3>Delivery Information</h3>
               <p><strong>Address:</strong> {order.delivery_address}</p>
-              <p><strong>Phone:</strong> {order.delivery_phone}</p>
-              {order.delivery_notes && (
-                <p><strong>Notes:</strong> {order.delivery_notes}</p>
+              <p><strong>Phone:</strong> {order.phone_number}</p>
+              {order.notes && (
+                <p><strong>Notes:</strong> {order.notes}</p>
               )}
             </div>
 

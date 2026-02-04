@@ -103,13 +103,13 @@
 }
 
 .discount-price {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #B12704; /* Amazon-style price color */
 }
 
 .current-price {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #111;
 }
@@ -154,7 +154,7 @@
 
   .discount-price,
   .current-price {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .add-to-cart-btn {

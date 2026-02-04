@@ -108,6 +108,15 @@
   transition: border-color 0.3s;
   box-sizing: border-box;
   font-family: inherit;
+  background-color: white !important;
+  color: #333 !important;
+}
+
+body.dark-theme .form-group input,
+body.dark-theme .form-group textarea {
+  background-color: white !important;
+  color: #333 !important;
+  border: 2px solid #404040;
 }
 
 .form-group input:focus,
@@ -132,6 +141,14 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
+  background-color: white !important;
+  color: #333 !important;
+}
+
+body.dark-theme .payment-option {
+  background-color: white !important;
+  color: #333 !important;
+  border: 2px solid #404040;
 }
 
 .payment-option:hover {
@@ -314,4 +331,43 @@
   .order-summary-section {
     position: static;
   }
+}
+/* Dark Theme Support for Containers */
+body.dark-theme .checkout-page {
+  background: var(--bg-color);
+}
+
+body.dark-theme .checkout-container h1,
+body.dark-theme .empty-state h2,
+body.dark-theme .form-section h2,
+body.dark-theme .form-group label,
+body.dark-theme .payment-option-content strong,
+body.dark-theme .order-summary-section h2,
+body.dark-theme .summary-item-details h4,
+body.dark-theme .summary-item-total,
+body.dark-theme .summary-row.total {
+  color: var(--text-color);
+}
+
+body.dark-theme .empty-state p,
+body.dark-theme .payment-option-content p,
+body.dark-theme .summary-item-details p,
+body.dark-theme .summary-row {
+  color: #b0b0b0;
+}
+
+body.dark-theme .checkout-form-section,
+body.dark-theme .order-summary-section,
+body.dark-theme .empty-state {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+body.dark-theme .summary-items,
+body.dark-theme .summary-row.total {
+  border-color: var(--border-color);
+}
+
+body.dark-theme .summary-item-image {
+  background: #333;
 }

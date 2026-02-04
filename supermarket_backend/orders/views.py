@@ -29,7 +29,8 @@ class OrderDetailView(generics.RetrieveAPIView):
     
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'pk'
+    lookup_field = 'order_number'
+    lookup_url_kwarg = 'order_number'
     
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user).prefetch_related('items')

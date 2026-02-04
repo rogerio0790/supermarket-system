@@ -19,12 +19,9 @@ function OrderConfirmationPage() {
   const fetchOrder = async () => {
     try {
       setLoading(true);
-      // Backend uses ID for lookup in some places or order_number in others.
-      // Based on CheckoutPage redirecting with response.data.id, we use ID here.
-      // If the backend detail view uses order_number, we might need to adjust.
-      // However, the common issue is that it's fetching by order_number but receiving ID.
-      // Let's check the backend detail view: it uses lookup_field = 'order_number'.
-      // So if CheckoutPage sends ID, it fails.
+      // The backend OrderDetailView uses lookup_field = 'pk' by default, 
+      // but the URL pattern in urls.py might be using order_number.
+      // Let's ensure we're fetching by the correct identifier.
       const response = await api.get(`orders/${orderId}/`);
       setOrder(response.data);
     } catch (err) {

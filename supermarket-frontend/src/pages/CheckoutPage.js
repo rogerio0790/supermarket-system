@@ -108,6 +108,7 @@ function CheckoutPage() {
         phone_number: deliveryInfo.phone_number,
         notes: deliveryInfo.notes,
         payment_method: paymentMethod,
+        delivery_fee: 0, // Ensure delivery_fee is sent to avoid validation error
       };
 
       console.log('Sending order data:', orderData);
@@ -119,7 +120,8 @@ function CheckoutPage() {
       // Clear cart context after successful order
       await clearCart();
       
-      navigate(`/order-confirmation/${response.data.id}`);
+      // Navigate using order_number as expected by the confirmation page's backend lookup
+      navigate(`/order-confirmation/${response.data.order_number}`);
     } catch (err) {
       console.error('Order placement error:', err);
       console.error('Error response:', err.response?.data);

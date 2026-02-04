@@ -290,3 +290,56 @@
     width: 100%;
   }
 }
+/* Dark Theme Support */
+body.dark-theme .order-confirmation-page {
+  background: var(--bg-color);
+}
+
+body.dark-theme .success-header,
+body.dark-theme .order-details-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+body.dark-theme .success-header h1,
+body.dark-theme .order-header h2,
+body.dark-theme .info-section h3,
+body.dark-theme .order-items-section h3,
+body.dark-theme .order-item-details h4,
+body.dark-theme .order-item-total,
+body.dark-theme .total-row.grand-total,
+body.dark-theme .error-state h2 {
+  color: var(--text-color);
+}
+
+body.dark-theme .success-header p,
+body.dark-theme .order-date,
+body.dark-theme .info-section p,
+body.dark-theme .order-item-details p,
+body.dark-theme .total-row,
+body.dark-theme .error-state p {
+  color: #b0b0b0;
+}
+
+body.dark-theme .order-header,
+body.dark-theme .order-totals,
+body.dark-theme .total-row.grand-total {
+  border-color: var(--border-color);
+}
+
+body.dark-theme .order-item {
+  background: #333;
+}
+
+body.dark-theme .order-item-image {
+  background: #444;
+}
+
+body.dark-theme .btn-continue {
+  color: #00c853;
+  border-color: #00c853;
+}
+
+body.dark-theme .btn-continue:hover {
+  background: rgba(0, 200, 83, 0.1);
+}

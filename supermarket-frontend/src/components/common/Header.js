@@ -1,17 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import AuthModals from './AuthModals';
 import './Header.css';
 
 function Header() {
   const { user, logout } = useAuth();
   const { cartItemsCount } = useCart();
   const navigate = useNavigate();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate('/');
+  };
+
+  const openAuthModal = (mode) => {
+    setAuthMode(mode);
+    setIsAuthModalOpen(true);
   };
 
   return (
@@ -54,12 +62,12 @@ function Header() {
             </>
           ) : (
             <>
-              <Link to="/login" className="header-link">
+              <button onClick={() => openAuthModal('login')} className="header-link btn-text">
                 Sign In
-              </Link>
-              <Link to="/register" className="btn-register">
+              </button>
+              <button onClick={() => openAuthModal('register')} className="btn-register">
                 Sign Up
-              </Link>
+              </button>
             </>
           )}
         </div>
@@ -94,6 +102,13 @@ function Header() {
           </Link>
         </div>
       </nav>
+
+      {/* Auth Modals */}
+      <AuthModals 
+        isOpen={isAuthModalOpen} 
+        initialMode={authMode} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </header>
   );
 }

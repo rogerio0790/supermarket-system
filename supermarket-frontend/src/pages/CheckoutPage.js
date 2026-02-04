@@ -239,7 +239,7 @@ function CheckoutPage() {
               >
                 {loading
                   ? 'Placing Order...'
-                  : `Place Order - ${formatPrice(cart.total)}`}
+                  : `Place Order - ${formatPrice(Number(cart.total))}`}
               </button>
             </form>
           </div>
@@ -268,28 +268,28 @@ function CheckoutPage() {
                   </p>
                 </div>
 
-                <div className="summary-item-total">
-                  {formatPrice(item.subtotal)}
-                </div>
+                 <div className="order-item-total">
+                  {formatPrice(item.total_price || item.subtotal)}
+                </div>>
               </div>
             ))}
 
             <div className="summary-totals">
               <div className="summary-row">
                 <span>Subtotal</span>
-                <span>{formatPrice(cart.subtotal)}</span>
+                <span>{formatPrice(Number(cart.subtotal))}</span>
               </div>
 
-              {cart.discount > 0 && (
+              {Number(cart.discount) > 0 && (
                 <div className="summary-row discount">
                   <span>Discount</span>
-                  <span>-{formatPrice(cart.discount)}</span>
+                  <span>-{formatPrice(Number(cart.discount))}</span>
                 </div>
               )}
 
               <div className="summary-row total">
                 <span>Total</span>
-                <span>{formatPrice(cart.total)}</span>
+                <span>{formatPrice(Number(cart.total))}</span>
               </div>
             </div>
           </div>

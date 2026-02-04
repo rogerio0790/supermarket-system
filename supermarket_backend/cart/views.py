@@ -136,11 +136,20 @@ class ClearCartView(APIView):
     
     permission_classes = [IsAuthenticated]
     
+    def post(self, request):
+        cart = get_object_or_404(Cart, user=request.user)
+        cart.items.all().delete()
+        
+        return Response(
+            {'message': 'Cart cleared successfully'},
+            status=status.HTTP_204_NO_CONTENT
+        )
+    
     def delete(self, request):
         cart = get_object_or_404(Cart, user=request.user)
         cart.items.all().delete()
         
         return Response(
             {'message': 'Cart cleared successfully'},
-            status=status.HTTP_200_OK
+            status=status.HTTP_204_NO_CONTENT
         )

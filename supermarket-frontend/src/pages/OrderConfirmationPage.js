@@ -126,7 +126,7 @@ function OrderConfirmationPage() {
                     <p>Qty: {item.quantity} × {formatPrice(item.product_price)}</p>
                   </div>
                   <div className="order-item-total">
-                    {formatPrice(item.total_price)}
+                    {formatPrice(Number(item.total_price))}
                   </div>
                 </div>
               ))}
@@ -136,21 +136,21 @@ function OrderConfirmationPage() {
           <div className="order-totals">
             <div className="total-row">
               <span>Subtotal</span>
-              <span>{formatPrice(order.subtotal)}</span>
+              <span>{formatPrice(Number(order.subtotal))}</span>
             </div>
-            {order.discount > 0 && (
+            {Number(order.discount) > 0 && (
               <div className="total-row discount">
                 <span>Discount</span>
-                <span>-{formatPrice(order.discount)}</span>
+                <span>-{formatPrice(Number(order.discount))}</span>
               </div>
             )}
             <div className="total-row">
               <span>Delivery Fee</span>
-              <span>FREE</span>
+              <span>{Number(order.delivery_fee) > 0 ? formatPrice(Number(order.delivery_fee)) : 'FREE'}</span>
             </div>
             <div className="total-row grand-total">
               <span>Total</span>
-              <span>{formatPrice(order.total)}</span>
+              <span>{formatPrice(Number(order.total))}</span>
             </div>
           </div>
         </div>

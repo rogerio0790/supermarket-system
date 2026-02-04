@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/common/Header';
 import ProductCard from '../components/products/ProductCard';
 import api from '../api/axios';
@@ -9,17 +10,21 @@ function ProductListPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Get category and search from URL
+  const queryParams = new URLSearchParams(location.search);
+  const selectedCategory = queryParams.get('category') || 'all';
+  const searchQuery = queryParams.get('search') || '';
 
   useEffect(() => {
     fetchCategories();
-    fetchProducts();
   }, []);
 
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, searchQuery]);
+  }, [location.search]);
 
   const fetchCategories = async () => {
     try {
@@ -65,12 +70,25 @@ function ProductListPage() {
   };
 
   const handleCategoryChange = (categoryId) => {
-    setSelectedCategory(categoryId);
+    const params = new URLSearchParams(location.search);
+    if (categoryId === 'all') {
+      params.delete('category');
+    } else {
+      params.set('category', categoryId);
+    }
+    navigate(`/products?${params.toString()}`);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchProducts();
+    const query = e.target.elements.search.value;
+    const params = new URLSearchParams(location.search);
+    if (query) {
+      params.set('search', query);
+    } else {
+      params.delete('search');
+    }
+    navigate(`/products?${params.toString()}`);
   };
 
   return (
@@ -118,9 +136,9 @@ function ProductListPage() {
             <form onSubmit={handleSearch} className="search-form">
               <input
                 type="text"
+                name="search"
                 placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                defaultValue={searchQuery}
               />
               <button type="submit">Search</button>
             </form>

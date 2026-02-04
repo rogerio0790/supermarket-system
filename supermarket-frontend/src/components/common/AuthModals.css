@@ -93,8 +93,8 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #2ecc71;
-  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+  border-color: #FF9900;
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.2);
 }
 
 .auth-error {
@@ -111,14 +111,14 @@
 .auth-submit-btn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
+  background: #febd69;
+  color: #111;
+  border: 1px solid #a88734;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,8 +126,8 @@
 }
 
 .auth-submit-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+  background: #f7ca00;
+  border-color: #a88734;
 }
 
 .auth-submit-btn:disabled {
@@ -146,7 +146,7 @@
 .auth-switch button {
   background: none;
   border: none;
-  color: #27ae60;
+  color: #067d38;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -187,8 +187,8 @@
 
 .otp-input-container input:focus {
   outline: none;
-  border-color: #2ecc71;
-  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+  border-color: #FF9900;
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.2);
 }
 
 .resend-container {
@@ -200,7 +200,7 @@
 .resend-container button {
   background: none;
   border: none;
-  color: #27ae60;
+  color: #067d38;
   font-weight: 600;
   cursor: pointer;
 }
@@ -222,7 +222,7 @@
   position: relative;
   border-radius: 50%;
   box-sizing: content-box;
-  border: 4px solid #4CAF50;
+  border: 4px solid #067d38;
 }
 
 .check-icon::before {
@@ -244,7 +244,7 @@
 
 .icon-line {
   height: 5px;
-  background-color: #4CAF50;
+  background-color: #067d38;
   display: block;
   border-radius: 2px;
   position: absolute;

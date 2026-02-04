@@ -5,7 +5,7 @@
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+  background: linear-gradient(135deg, #067d38 0%, #048834 100%);
   color: white;
   padding: 60px 24px;
 }
@@ -55,15 +55,20 @@
 }
 
 .btn-shop-now {
-  background: white;
-  color: #00c853;
+  background: #febd69;
+  color: #111;
   padding: 14px 32px;
-  border: none;
+  border: 1px solid #a88734;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: all 0.2s;
+}
+
+.btn-shop-now:hover {
+  background: #f7ca00;
+  border-color: #a88734;
 }
 
 .btn-shop-now:hover {
@@ -84,7 +89,7 @@
 
 .btn-learn-more:hover {
   background: white;
-  color: #00c853;
+  color: #067d38;
 }
 
 .hero-features {

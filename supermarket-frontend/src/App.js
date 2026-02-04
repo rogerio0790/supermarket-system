@@ -1,11 +1,16 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import VerifyOTPPage from './pages/VerifyOTPPage';
 import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderConfirmationPage from './pages/OrderConfirmationPage';
 
 function App() {
   return (
@@ -15,13 +20,14 @@ function App() {
           <div className="App">
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/verify-otp" element={<VerifyOTPPage />} />
               <Route path="/products" element={<ProductListPage />} />
               <Route path="/product/:id" element={<ProductDetailPage />} />
               <Route path="/cart" element={<CartPage />} />
-              {/* Redirect old auth pages to home since we now use modals */}
-              <Route path="/login" element={<Navigate to="/" replace />} />
-              <Route path="/register" element={<Navigate to="/" replace />} />
-              <Route path="/verify-otp" element={<Navigate to="/" replace />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
             </Routes>
           </div>
         </Router>

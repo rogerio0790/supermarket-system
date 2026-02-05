@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/common/Header';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext';
 import { formatPrice, getMediaUrl } from '../utils/helpers';
 import api from '../api/axios';
 import './CheckoutPage.css';
@@ -10,6 +11,7 @@ import './CheckoutPage.css';
 function CheckoutPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { openAuthModal, openOrderModal } = useModal();
   const { cart, loading: cartLoading, clearCart } = useCart();
 
   const [deliveryInfo, setDeliveryInfo] = useState({
@@ -32,7 +34,7 @@ function CheckoutPage() {
           <div className="empty-state">
             <h2>Please Login</h2>
             <p>You need to be logged in to checkout</p>
-            <button onClick={() => navigate('/login')} className="btn-primary">
+            <button onClick={() => openAuthModal('login')} className="btn-primary">
               Login
             </button>
           </div>
@@ -127,8 +129,9 @@ function CheckoutPage() {
       // Clear cart context after successful order
       await clearCart();
       
-      // Navigate using order_number as expected by the confirmation page's backend lookup
-      navigate(`/order-confirmation/${response.data.order_number}`);
+      // Show order confirmation modal instead of navigating
+      openOrderModal(response.data);
+      
     } catch (err) {
       console.error('Order placement error:', err);
       console.error('Error response:', err.response?.data);

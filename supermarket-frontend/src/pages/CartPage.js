@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/common/Header';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext';
 import { formatPrice, getMediaUrl } from '../utils/helpers';
 import './CartPage.css';
 
 function CartPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { openAuthModal } = useModal();
   const { cart, loading, updateCartItem, removeFromCart, clearCart } = useCart();
 
   if (!user) {
@@ -18,7 +20,7 @@ function CartPage() {
         <div className="empty-cart-container">
           <h2>Please Login</h2>
           <p>You need to be logged in to view your cart</p>
-          <button onClick={() => navigate('/login')} className="btn-login">
+          <button onClick={() => openAuthModal('login')} className="btn-login">
             Login
           </button>
         </div>

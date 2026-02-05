@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext';
 import './AuthPages.css';
 
 function RegisterPage() {
@@ -15,6 +16,7 @@ function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
+  const { openAuthModal } = useModal();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -161,7 +163,7 @@ const handleSubmit = async (e) => {
         </form>
 
         <p className="auth-footer">
-          Already have an account? <Link to="/login">Sign In</Link>
+          Already have an account? <button onClick={() => openAuthModal('login')} className="btn-link">Sign In</button>
         </p>
       </div>
     </div>

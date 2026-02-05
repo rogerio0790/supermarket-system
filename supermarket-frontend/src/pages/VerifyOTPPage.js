@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useModal } from '../context/ModalContext';
 import api from '../api/axios';
 import './VerifyOTPPage.css';
 
 function VerifyOTPPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { openAuthModal } = useModal();
   const phoneNumber = location.state?.phone_number || '';
   
   const [otp, setOtp] = useState('');
@@ -25,13 +27,14 @@ function VerifyOTPPage() {
       setLoading(true);
       setError('');
       
-      const response = await api.post('notifications/verify-otp/', {
+      await api.post('notifications/verify-otp/', {
         phone_number: phoneNumber,
         otp_code: otp
       });
       
       alert('Account verified successfully! Please login.');
-      navigate('/login');
+      openAuthModal('login');
+      navigate('/'); // Redirect to home after showing modal
     } catch (err) {
       console.error('OTP verification error:', err);
       setError(err.response?.data?.error || 'Invalid OTP. Please try again.');

@@ -2,17 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useModal } from '../../context/ModalContext';
 import api from '../../api/axios';
-import AuthModals from './AuthModals';
 import './Header.css';
 
 function Header() {
   const { user, logout } = useAuth();
   const { cartItemsCount } = useCart();
+  const { openAuthModal } = useModal();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState('login');
   const [categories, setCategories] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -46,10 +45,7 @@ function Header() {
     navigate('/');
   };
 
-  const openAuthModal = (mode) => {
-    setAuthMode(mode);
-    setIsAuthModalOpen(true);
-  };
+
 
   const isActive = (path) => {
     if (path === '/products') {
@@ -188,11 +184,7 @@ function Header() {
         </div>
       </nav>
 
-      <AuthModals 
-        isOpen={isAuthModalOpen} 
-        initialMode={authMode} 
-        onClose={() => setIsAuthModalOpen(false)} 
-      />
+
     </header>
   );
 }

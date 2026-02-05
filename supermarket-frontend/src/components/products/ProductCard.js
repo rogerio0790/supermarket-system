@@ -3,42 +3,40 @@ import { Link, useNavigate } from 'react-router-dom';
 import { formatPrice, getMediaUrl } from '../../utils/helpers';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useModal } from '../../context/ModalContext';
 import './ProductCard.css';
 
 function ProductCard({ product }) {
   const imageUrl = getMediaUrl(product.image);
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const { openAuthModal } = useModal();
   const navigate = useNavigate();
 
   const handleAddToCart = async (e) => {
-  e.preventDefault(); // Prevent navigation to product detail
-  e.stopPropagation(); // Stop event bubbling
-  
-  console.log('Add to cart clicked for product:', product.id); // ADD THIS
-  
-  if (!user) {
-    alert('Please login to add items to cart');
-    navigate('/login');
-    return;
-  }
+    e.preventDefault(); // Prevent navigation to product detail
+    e.stopPropagation(); // Stop event bubbling
+    
+    if (!user) {
+      openAuthModal('login');
+      return;
+    }
 
-  if (!product.is_in_stock) {
-    alert('This product is out of stock');
-    return;
-  }
+    if (!product.is_in_stock) {
+      alert('This product is out of stock');
+      return;
+    }
 
-  console.log('Calling addToCart...'); // ADD THIS
-  const result = await addToCart(product.id, 1);
-  console.log('AddToCart result:', result); // ADD THIS
-  
-  if (result.success) {
-    alert('Product added to cart!');
-  } else {
-    console.error('Failed to add to cart:', result.error); // ADD THIS
-    alert('Failed to add to cart. Please try again.');
-  }
-};
+    const result = await addToCart(product.id, 1);
+    
+    if (result.success) {
+      // Optional: Show a small toast or feedback instead of alert
+      alert('Product added to cart!');
+    } else {
+      alert('Failed to add to cart. Please try again.');
+    }
+  };
+
   return (
     <Link to={`/product/${product.id}`} className="product-card">
       <div className="product-image">

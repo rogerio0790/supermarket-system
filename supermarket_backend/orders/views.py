@@ -68,32 +68,51 @@ class CreateOrderView(APIView):
             )
         
         # Calculate totals
-        subtotal = sum(item.total_price for item in cart_items)
-        delivery_fee = serializer.validated_data.get('delivery_fee', 0)
+        from decimal import Decimal
+        subtotal = Decimal('0.00')
+        for item in cart_items:
+            subtotal += Decimal(str(item.total_price))
+            
+        delivery_fee = Decimal(str(serializer.validated_data.get('delivery_fee', 0)))
         total = subtotal + delivery_fee
         
         # Create order
-        order = Order.objects.create(
-            user=request.user,
-            delivery_address=serializer.validated_data['delivery_address'],
-            delivery_city=serializer.validated_data['delivery_city'],
-            phone_number=serializer.validated_data['phone_number'],
-            subtotal=subtotal,
-            delivery_fee=delivery_fee,
-            total=total,
-            notes=serializer.validated_data.get('notes', ''),
-            payment_method=serializer.validated_data.get('payment_method', 'cash_on_delivery')
-        )
+        try:
+            order = Order.objects.create(
+                user=request.user,
+                delivery_address=serializer.validated_data['delivery_address'],
+                delivery_city=serializer.validated_data['delivery_city'],
+                phone_number=serializer.validated_data['phone_number'],
+                subtotal=subtotal,
+                delivery_fee=delivery_fee,
+                total=total,
+                notes=serializer.validated_data.get('notes', ''),
+                payment_method=serializer.validated_data.get('payment_method', 'cash_on_delivery')
+            )
+        except Exception as e:
+            print(f"DEBUG: Order creation failed: {str(e)}")
+            return Response(
+                {'error': f'Order creation failed: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         # Create order items and update product stock
-        for cart_item in cart.items.all():
-            OrderItem.objects.create(
-                order=order,
-                product=cart_item.product,
-                product_name=cart_item.product.name,
-                product_price=cart_item.product.final_price,
-                quantity=cart_item.quantity
-            )
+        for cart_item in cart_items:
+            try:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    product_name=cart_item.product.name,
+                    product_price=Decimal(str(cart_item.product.final_price)),
+                    quantity=cart_item.quantity
+                )
+            except Exception as e:
+                print(f"DEBUG: OrderItem creation failed: {str(e)}")
+                # Rollback will happen due to @transaction.atomic
+                return Response(
+                    {'error': f'Order item creation failed: {str(e)}'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             
             # Reduce product stock
             product = cart_item.product

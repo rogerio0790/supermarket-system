@@ -4,6 +4,7 @@ import ProductCard from '../components/products/ProductCard';  // Should NOT hav
 import api from '../api/axios';
 import './HomePage.css';
 import heroImage from '../background.jpeg';
+//import heroImage from '../background2.jpg';
 
 function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -39,10 +40,10 @@ function HomePage() {
       <section className="hero-section">
         <div className="hero-container">
           <div className="hero-content">
-            <div className="weekend-badge"></div>
+            <div className="weekend-badge"><i>We are hiring!</i></div>
             <h1 className="hero-title">
              WELCOME TO RUKARA SUPERMARKET<br />
-              <span className="hero-title-highlight">Delivered Fast</span>
+              <span className="hero-title-highlight">Shop with us!</span>
             </h1>
             <p className="hero-description">
              Your one-stop shop for fresh foods, beverages, household essentials, and more at unbeatable prices.
@@ -57,7 +58,7 @@ function HomePage() {
                 ⚡ 30-min delivery
               </div>
               <div className="feature-item">
-                🚚 Free above $50
+                🚚 Free above 50,000 Rwf
               </div>
             </div>
           </div>

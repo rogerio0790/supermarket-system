@@ -4,7 +4,6 @@ from products.models import Product
 from django.core.validators import MinValueValidator
 import uuid
 
-
 class Order(models.Model):
     """Order model"""
     
@@ -22,11 +21,11 @@ class Order(models.Model):
         ('FAILED', 'Failed'),
         ('REFUNDED', 'Refunded'),
     )
-
-    PAYMENT_METHOD_CHOICES = (
-        ('cash_on_delivery', 'Cash on Delivery'),
-        ('mobile_money', 'Mobile Money'),
-        ('card', 'Card'),
+    
+    PAYMENT_METHOD_CHOICES = (  # Add this
+        ('MTN', 'MTN Mobile Money'),
+        ('AIRTEL', 'Airtel Money'),
+        ('CASH', 'Cash on Delivery'),
     )
     
     # Order identification
@@ -40,7 +39,11 @@ class Order(models.Model):
     # Order status
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING')
-    payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES, default='cash_on_delivery')
+    payment_method = models.CharField(  # ADD THIS FIELD
+        max_length=20, 
+        choices=PAYMENT_METHOD_CHOICES, 
+        default='MTN'
+    )
     
     # Delivery information
     delivery_address = models.TextField()
@@ -78,7 +81,6 @@ class Order(models.Model):
     def total_items(self):
         """Total number of items in order"""
         return sum(item.quantity for item in self.items.all())
-
 
 class OrderItem(models.Model):
     """Order item model"""

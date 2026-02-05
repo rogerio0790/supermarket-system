@@ -1,27 +1,37 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/common/Header';
+import LoginModal from '../components/common/LoginModal';
+import ProductImageGallery from '../components/products/ProductImageGallery';
+import ProductReviews from '../components/products/ProductReviews';
+import RelatedProducts from '../components/products/RelatedProducts';
 import { formatPrice, getMediaUrl } from '../utils/helpers';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import { useCart } from '../context/CartContext'; // <-- import useCart
 import './ProductDetailPage.css';
 
 function ProductDetailPage() {
-  const { id } = useParams(); // Changed from slug to id as per App.js route
+  const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { addToCart } = useCart();
+  
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeImage, setActiveImage] = useState(0);
-  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0, show: false });
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [aiDescription, setAiDescription] = useState('');
+  const [generatingAI, setGeneratingAI] = useState(false);
 
-  const { addToCart: addToCartContext } = useCart();
+  useEffect(() => {
+    fetchProduct();
+  }, [id]);
 
-  const fetchProduct = useCallback(async () => {
+  const fetchProduct = async () => {
     try {
       setLoading(true);
-      // Fetching by ID as per the route /product/:id
       const response = await api.get(`products/${id}/`);
       setProduct(response.data);
       setError(null);
@@ -31,43 +41,55 @@ function ProductDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [id]);
-
-  const handleMouseMove = (e) => {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.pageX - left - window.scrollX) / width) * 100;
-    const y = ((e.pageY - top - window.scrollY) / height) * 100;
-    setZoomPos({ x, y, show: true });
   };
-
-  const handleMouseLeave = () => {
-    setZoomPos({ ...zoomPos, show: false });
-  };
-
-  useEffect(() => {
-    fetchProduct();
-  }, [fetchProduct]);
 
   const handleQuantityChange = (action) => {
-    if (action === 'increase') {
-      if (quantity < product.stock) setQuantity(quantity + 1);
-    } else if (action === 'decrease') {
-      if (quantity > 1) setQuantity(quantity - 1);
+    if (action === 'increase' && quantity < product.stock) {
+      setQuantity(quantity + 1);
+    } else if (action === 'decrease' && quantity > 1) {
+      setQuantity(quantity - 1);
     }
   };
 
-  // <-- REPLACE the old handleAddToCart with this one
   const handleAddToCart = async () => {
-    const result = await addToCartContext(product.id, quantity);
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    const result = await addToCart(product.id, quantity);
     if (result.success) {
-      alert('Product added to cart!');
-      setQuantity(1); // Reset quantity
+      alert('Added to cart successfully!');
+      setQuantity(1);
     } else {
-      if (result.error?.error) {
-        alert(result.error.error);
-      } else {
-        alert('Failed to add to cart. Please try again.');
-      }
+      alert('Failed to add to cart. Please try again.');
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    const result = await addToCart(product.id, quantity);
+    if (result.success) {
+      navigate('/checkout');
+    }
+  };
+
+  const handleGenerateAIDescription = async () => {
+    setGeneratingAI(true);
+    try {
+      // TODO: Integrate OpenAI API here
+      // For now, show placeholder
+      setTimeout(() => {
+        setAiDescription(`✨ AI-Generated Description:\n\n${product.name} is a premium quality product that delivers exceptional value. Perfect for daily use, this item combines superior craftsmanship with modern convenience. Customers love its reliability and performance. Stock up now while supplies last!`);
+        setGeneratingAI(false);
+      }, 2000);
+    } catch (error) {
+      console.error('AI generation error:', error);
+      setGeneratingAI(false);
     }
   };
 
@@ -76,7 +98,8 @@ function ProductDetailPage() {
       <div className="product-detail-page">
         <Header />
         <div className="loading-container">
-          <p>Loading product...</p>
+          <div className="loader"></div>
+          <p>Loading product details...</p>
         </div>
       </div>
     );
@@ -87,8 +110,10 @@ function ProductDetailPage() {
       <div className="product-detail-page">
         <Header />
         <div className="error-container">
-          <p>{error || 'Product not found'}</p>
-          <button onClick={() => navigate('/products')} className="btn-back">
+          <div className="error-icon">📦</div>
+          <h2>Product Not Found</h2>
+          <p>Sorry, we couldn't find the product you're looking for.</p>
+          <button onClick={() => navigate('/products')} className="btn-back-home">
             Back to Products
           </button>
         </div>
@@ -96,173 +121,259 @@ function ProductDetailPage() {
     );
   }
 
-  const imageUrl = getMediaUrl(product.image);
-
-  // For multiple images, we'll use the main image and some placeholders since the model only has one.
-  // In a real app, product.images would be an array.
-  const productImages = product.image ? [product.image, product.image, product.image] : [];
-
   return (
-    <div className="product-detail-page">
-      <Header />
+    <>
+      <div className="product-detail-page">
+        <Header />
 
-      <div className="detail-container">
-        {/* Breadcrumb */}
-        <div className="breadcrumb">
-          <span onClick={() => navigate('/')} className="breadcrumb-link">Home</span>
-          <span className="breadcrumb-separator">/</span>
-          <span onClick={() => navigate('/products')} className="breadcrumb-link">Products</span>
-          <span className="breadcrumb-separator">/</span>
-          <span className="breadcrumb-current">{product.name}</span>
-        </div>
-
-        {/* Product Details */}
-        <div className="product-detail-grid">
-          <div className="product-image-section">
-            <div 
-              className="main-image-container"
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              {productImages.length > 0 ? (
-                <img 
-                  src={getMediaUrl(productImages[activeImage])} 
-                  alt={product.name} 
-                  className="main-image"
-                />
-              ) : (
-                <div className="no-image">📦</div>
-              )}
-              
-              {zoomPos.show && (
-                <div 
-                  className="zoom-result"
-                  style={{
-                    backgroundImage: `url(${getMediaUrl(productImages[activeImage])})`,
-                    backgroundPosition: `${zoomPos.x}% ${zoomPos.y}%`
-                  }}
-                />
-              )}
-            </div>
-            
-            <div className="image-thumbnails">
-              {productImages.map((img, idx) => (
-                <div 
-                  key={idx} 
-                  className={`thumbnail ${activeImage === idx ? 'active' : ''}`}
-                  onClick={() => setActiveImage(idx)}
-                >
-                  <img src={getMediaUrl(img)} alt={`${product.name} view ${idx + 1}`} />
-                </div>
-              ))}
-            </div>
+        <div className="product-container">
+          {/* Breadcrumb */}
+          <div className="breadcrumb">
+            <span onClick={() => navigate('/')}>Home</span>
+            <span className="separator">/</span>
+            <span onClick={() => navigate('/products')}>Products</span>
+            <span className="separator">/</span>
+            <span onClick={() => navigate(`/products?category=${product.category}`)}>
+              {product.category_name}
+            </span>
+            <span className="separator">/</span>
+            <span className="current">{product.name}</span>
           </div>
 
-          <div className="product-info-section">
-            <div className="product-header">
-              <div className="product-category-badge">{product.category_name}</div>
-              <h1 className="product-title">{product.name}</h1>
-              <p className="product-sku">SKU: {product.sku || 'N/A'}</p>
+          {/* Main Product Section */}
+          <div className="product-main">
+            {/* Left: Image Gallery */}
+            <div className="product-gallery-section">
+              <ProductImageGallery 
+                images={[product.image]} 
+                productName={product.name}
+              />
             </div>
 
-            <div className="product-pricing-card">
-              <div className="price-label">Price:</div>
-              <div className="product-pricing">
+            {/* Middle: Product Info */}
+            <div className="product-info-section">
+              <div className="product-brand">{product.category_name}</div>
+              <h1 className="product-name">{product.name}</h1>
+              
+              {/* Rating */}
+              <div className="product-rating">
+                <div className="stars">
+                  ⭐⭐⭐⭐⭐
+                </div>
+                <span className="rating-count">4.5 (128 reviews)</span>
+              </div>
+
+              {/* Price */}
+              <div className="product-price-section">
                 {product.discount_price ? (
                   <>
-                    <div className="price-group">
-                      <span className="discount-price">{formatPrice(product.discount_price)}</span>
-                      <span className="original-price">{formatPrice(product.price)}</span>
+                    <div className="price-main">
+                      <span className="currency">RWF</span>
+                      <span className="amount">{formatPrice(product.discount_price).replace('RWF', '').trim()}</span>
                     </div>
-                    <span className="discount-badge">-{product.discount_percentage}% OFF</span>
+                    <div className="price-original">
+                      Was: <span>{formatPrice(product.price)}</span>
+                    </div>
+                    <div className="price-savings">
+                      You save: {formatPrice(product.price - product.discount_price)} ({product.discount_percentage}%)
+                    </div>
                   </>
                 ) : (
-                  <span className="current-price">{formatPrice(product.price)}</span>
+                  <div className="price-main">
+                    <span className="currency">RWF</span>
+                    <span className="amount">{formatPrice(product.price).replace('RWF', '').trim()}</span>
+                  </div>
                 )}
               </div>
-              <div className="unit-info">Price per {product.unit || 'piece'}</div>
-            </div>
 
-            <div className="stock-info">
-              <div className={`stock-status-badge ${product.is_in_stock ? 'in-stock' : 'out-of-stock'}`}>
-                {product.is_in_stock ? 'In Stock' : 'Out of Stock'}
+              {/* Stock Status */}
+              <div className="stock-info">
+                {product.is_in_stock ? (
+                  <div className="in-stock">
+                    <span className="status-icon">✓</span>
+                    <span>In Stock ({product.stock} available)</span>
+                  </div>
+                ) : (
+                  <div className="out-of-stock">
+                    <span className="status-icon">✗</span>
+                    <span>Currently Unavailable</span>
+                  </div>
+                )}
               </div>
-              {product.is_in_stock && (
-                <span className="stock-count">{product.stock} units available</span>
-              )}
-            </div>
 
-            <div className="specifications-section">
-              <h3>Specifications</h3>
-              <div className="specs-grid">
-                <div className="spec-item">
-                  <span className="spec-label">Category</span>
-                  <span className="spec-value">{product.category_name}</span>
-                </div>
-                <div className="spec-item">
-                  <span className="spec-label">Unit</span>
-                  <span className="spec-value">{product.unit}</span>
-                </div>
-                <div className="spec-item">
-                  <span className="spec-label">Status</span>
-                  <span className="spec-value">{product.is_active ? 'Active' : 'Inactive'}</span>
-                </div>
+              {/* AI Description Button */}
+              <div className="ai-section">
+                <button 
+                  onClick={handleGenerateAIDescription}
+                  className="btn-ai-generate"
+                  disabled={generatingAI}
+                >
+                  {generatingAI ? (
+                    <>
+                      <span className="ai-loader">🤖</span>
+                      Generating AI Description...
+                    </>
+                  ) : (
+                    <>
+                      <span className="ai-icon">✨</span>
+                      Generate AI Product Description
+                    </>
+                  )}
+                </button>
+                
+                {aiDescription && (
+                  <div className="ai-description">
+                    <div className="ai-badge">AI-Powered</div>
+                    <p>{aiDescription}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Product Highlights */}
+              <div className="product-highlights">
+                <h3>Product Highlights</h3>
+                <ul>
+                  <li>Premium quality {product.category_name.toLowerCase()}</li>
+                  <li>Fresh and carefully selected</li>
+                  <li>Same-day delivery available</li>
+                  <li>100% satisfaction guaranteed</li>
+                </ul>
+              </div>
+
+              {/* Product Details */}
+              <div className="product-details-table">
+                <h3>Product Details</h3>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>Category</td>
+                      <td>{product.category_name}</td>
+                    </tr>
+                    <tr>
+                      <td>Unit</td>
+                      <td>{product.unit}</td>
+                    </tr>
+                    <tr>
+                      <td>Stock</td>
+                      <td>{product.stock} units available</td>
+                    </tr>
+                    {product.discount_percentage > 0 && (
+                      <tr>
+                        <td>Discount</td>
+                        <td className="discount-highlight">{product.discount_percentage}% OFF</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            <div className="purchase-section">
-              {product.is_in_stock && (
-                <div className="quantity-selector">
-                  <label>Quantity:</label>
-                  <div className="quantity-controls">
-                    <button 
-                      className="qty-btn" 
-                      onClick={() => handleQuantityChange('decrease')}
-                      disabled={quantity <= 1}
-                    >-</button>
-                    <input 
-                      type="number" 
-                      className="qty-input" 
-                      value={quantity} 
-                      readOnly 
-                    />
-                    <button 
-                      className="qty-btn" 
-                      onClick={() => handleQuantityChange('increase')}
-                      disabled={quantity >= product.stock}
-                    >+</button>
+            {/* Right: Purchase Box */}
+            <div className="product-purchase-section">
+              <div className="purchase-box">
+                <div className="purchase-price">
+                  {formatPrice(product.discount_price || product.price)}
+                </div>
+
+                <div className="delivery-info">
+                  <div className="delivery-item">
+                    <span className="icon">🚚</span>
+                    <div>
+                      <strong>FREE Delivery</strong>
+                      <p>On orders over RWF 50,000</p>
+                    </div>
+                  </div>
+                  <div className="delivery-item">
+                    <span className="icon">⚡</span>
+                    <div>
+                      <strong>Fast Delivery</strong>
+                      <p>Within 30 minutes</p>
+                    </div>
                   </div>
                 </div>
-              )}
 
-              <div className="action-buttons">
-                <button 
-                  className="btn-add-to-cart"
-                  onClick={handleAddToCart}
-                  disabled={!product.is_in_stock}
-                >
-                  {product.is_in_stock ? 'Add to Cart' : 'Out of Stock'}
-                </button>
-                <button className="btn-buy-now" disabled={!product.is_in_stock}>
-                  Buy Now
-                </button>
+                {product.is_in_stock && (
+                  <>
+                    {/* Quantity Selector */}
+                    <div className="quantity-selector">
+                      <label>Quantity:</label>
+                      <div className="quantity-controls">
+                        <button 
+                          onClick={() => handleQuantityChange('decrease')}
+                          disabled={quantity <= 1}
+                        >
+                          −
+                        </button>
+                        <input type="text" value={quantity} readOnly />
+                        <button 
+                          onClick={() => handleQuantityChange('increase')}
+                          disabled={quantity >= product.stock}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="purchase-actions">
+                      <button 
+                        onClick={handleAddToCart}
+                        className="btn-add-to-cart"
+                      >
+                        🛒 Add to Cart
+                      </button>
+                      <button 
+                        onClick={handleBuyNow}
+                        className="btn-buy-now"
+                      >
+                        Buy Now
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {!product.is_in_stock && (
+                  <div className="out-of-stock-notice">
+                    <p>This item is currently out of stock</p>
+                    <button className="btn-notify">Notify When Available</button>
+                  </div>
+                )}
+
+                {/* Trust Badges */}
+                <div className="trust-badges">
+                  <div className="badge">
+                    <span>🔒</span>
+                    <span>Secure Payment</span>
+                  </div>
+                  <div className="badge">
+                    <span>↩️</span>
+                    <span>Easy Returns</span>
+                  </div>
+                  <div className="badge">
+                    <span>✓</span>
+                    <span>Quality Guarantee</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="product-extra-info">
-          <div className="info-tabs">
-            <button className="tab active">Product Description</button>
-          </div>
-          <div className="tab-panel">
-            <div className="description-content">
-              {product.description || 'No description available for this product.'}
-            </div>
-          </div>
+          {/* Reviews Section */}
+          <ProductReviews productId={product.id} />
+
+          {/* Related Products */}
+          <RelatedProducts 
+            categoryId={product.category} 
+            currentProductId={product.id}
+          />
         </div>
       </div>
-    </div>
+
+      <LoginModal 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)} 
+      />
+    </>
   );
 }
 

@@ -111,7 +111,7 @@ function ProductListPage() {
             {Array.isArray(categories) && categories.map((category) => (
               <button
                 key={category.id}
-                className={`category-filter-btn ${selectedCategory === category.id ? 'active' : ''}`}
+                className={`category-filter-btn ${String(selectedCategory) === String(category.id) ? 'active' : ''}`}
                 onClick={() => handleCategoryChange(category.id)}
               >
                 {category.name}
@@ -128,7 +128,7 @@ function ProductListPage() {
               <h1>
                 {selectedCategory === 'all' 
                   ? 'All Products' 
-                  : categories.find(c => c.id === selectedCategory)?.name || 'Products'}
+                  : categories.find(c => String(c.id) === String(selectedCategory))?.name || 'Products'}
               </h1>
               <p>{products.length} products found</p>
             </div>

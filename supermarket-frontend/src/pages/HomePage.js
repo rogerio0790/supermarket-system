@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/common/Header';
-import ProductCard from '../components/products/ProductCard';  // Should NOT have curly braces
+import ProductCard from '../components/products/ProductCard';
 import api from '../api/axios';
 import './HomePage.css';
 import heroImage from '../background.jpeg';
-//import heroImage from '../background2.jpg';
 
 function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -16,21 +15,18 @@ function HomePage() {
   }, []);
 
   const fetchFeaturedProducts = async () => {
-  try {
-    setLoading(true);
-    const response = await api.get('products/?is_featured=true');
-    console.log('API Response:', response.data); // ADD THIS LINE
-    console.log('First product:', response.data.results?.[0] || response.data[0]); // ADD THIS LINE
-    setFeaturedProducts(response.data.results || response.data);
-    setError(null);
-  } catch (err) {
-    console.error('Error fetching products:', err);
-    setError('Failed to load products');
-  } finally {
-    setLoading(false);
-  }
-};
-  
+    try {
+      setLoading(true);
+      const response = await api.get('products/?is_featured=true');
+      setFeaturedProducts(response.data.results || response.data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Failed to load products');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="home-page">

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/common/Header';
-import LoginModal from '../components/common/LoginModal';
 import ProductImageGallery from '../components/products/ProductImageGallery';
 import ProductReviews from '../components/products/ProductReviews';
 import RelatedProducts from '../components/products/RelatedProducts';
-import { formatPrice, getMediaUrl } from '../utils/helpers';
+import { formatPrice } from '../utils/helpers';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext';
 import api from '../api/axios';
 import './ProductDetailPage.css';
 
@@ -16,12 +16,12 @@ function ProductDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const { openAuthModal } = useModal();
   
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [aiDescription, setAiDescription] = useState('');
   const [generatingAI, setGeneratingAI] = useState(false);
 
@@ -53,7 +53,7 @@ function ProductDetailPage() {
 
   const handleAddToCart = async () => {
     if (!user) {
-      setShowLoginModal(true);
+      openAuthModal('login');
       return;
     }
 
@@ -68,7 +68,7 @@ function ProductDetailPage() {
 
   const handleBuyNow = async () => {
     if (!user) {
-      setShowLoginModal(true);
+      openAuthModal('login');
       return;
     }
 
@@ -368,11 +368,6 @@ function ProductDetailPage() {
           />
         </div>
       </div>
-
-      <LoginModal 
-        isOpen={showLoginModal} 
-        onClose={() => setShowLoginModal(false)} 
-      />
     </>
   );
 }

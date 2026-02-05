@@ -73,12 +73,12 @@ const handleSubmit = async (e) => {
       <div className="auth-box">
         <div className="auth-logo">
           <span className="logo-icon">🛒</span>
-          <h1>FreshMart</h1>
-          <p>Fresh & Fast</p>
+          <h1>RUKARA</h1>
+          <p>PREMIUM MARKET</p>
         </div>
 
         <h2>Create Account</h2>
-        <p className="auth-subtitle">Join FreshMart today</p>
+        <p className="auth-subtitle">Join Rukara Supermarket today</p>
 
         {error && <div className="error-message">{error}</div>}
 

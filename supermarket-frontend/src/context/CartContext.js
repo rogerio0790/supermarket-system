@@ -18,58 +18,53 @@ export const CartProvider = ({ children }) => {
   }, [user]);
 
   const fetchCart = async () => {
-  try {
-    setLoading(true);
-    // First, ensure we have a CSRF token by making a GET request
-    const response = await api.get('cart/');
-    setCart(response.data);
-  } catch (error) {
-    console.error('Error fetching cart:', error);
-    setCart(null);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      const response = await api.get('cart/');
+      setCart(response.data);
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      setCart(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const addToCart = async (productId, quantity = 1) => {
-  try {
-    console.log('Adding to cart:', { product_id: productId, quantity });
-    const response = await api.post('cart/add/', {
-      product_id: productId,
-      quantity: quantity,
-    });
-    console.log('Add to cart response:', response.data);
-    await fetchCart();
-    return { success: true };
-  } catch (error) {
-    console.error('Error adding to cart:', error);
-    console.error('Error response:', error.response?.data);
-    console.error('Error status:', error.response?.status);
-    return { success: false, error: error.response?.data };
-  }
-};
+    try {
+      await api.post('cart/add/', {
+        product_id: productId,
+        quantity: quantity,
+      });
+      await fetchCart();
+      return { success: true };
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      return { success: false, error: error.response?.data };
+    }
+  };
 
   const updateCartItem = async (itemId, quantity) => {
-  try {
-    await api.patch(`cart/items/${itemId}/update/`, { quantity });  // CHANGED - added /update/
-    await fetchCart();
-    return { success: true };
-  } catch (error) {
-    console.error('Error updating cart:', error);
-    return { success: false, error: error.response?.data };
-  }
-};
+    try {
+      await api.patch(`cart/items/${itemId}/update/`, { quantity });
+      await fetchCart();
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating cart:', error);
+      return { success: false, error: error.response?.data };
+    }
+  };
 
-const removeFromCart = async (itemId) => {
-  try {
-    await api.delete(`cart/items/${itemId}/remove/`);  // CHANGED - added /remove/
-    await fetchCart();
-    return { success: true };
-  } catch (error) {
-    console.error('Error removing from cart:', error);
-    return { success: false, error: error.response?.data };
-  }
-};
+  const removeFromCart = async (itemId) => {
+    try {
+      await api.delete(`cart/items/${itemId}/remove/`);
+      await fetchCart();
+      return { success: true };
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      return { success: false, error: error.response?.data };
+    }
+  };
 
   const clearCart = async () => {
     try {

@@ -102,12 +102,19 @@ function CheckoutPage() {
     try {
       setLoading(true);
 
+      // Map frontend payment methods to backend choices
+      const paymentMethodMapping = {
+        'cash_on_delivery': 'CASH',
+        'mobile_money': 'MTN',
+        'card': 'MTN' // Defaulting card to MTN as it's not yet supported in backend
+      };
+
       const orderData = {
         delivery_address: deliveryInfo.delivery_address,
         delivery_city: deliveryInfo.delivery_city,
         phone_number: deliveryInfo.phone_number,
         notes: deliveryInfo.notes,
-        payment_method: paymentMethod,
+        payment_method: paymentMethodMapping[paymentMethod] || 'CASH',
         delivery_fee: 0, // Ensure delivery_fee is sent to avoid validation error
       };
 

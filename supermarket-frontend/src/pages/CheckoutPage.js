@@ -262,15 +262,15 @@ function CheckoutPage() {
                 </div>
 
                 <div className="summary-item-details">
-                  <h4>{item.product_name}</h4>
+                  <h4>{item.product?.name || item.product_name}</h4>
                   <p>
-                    Qty: {item.quantity} × {formatPrice(item.price)}
+                    Qty: {item.quantity} × {formatPrice(Number(item.product?.final_price || item.price || 0))}
                   </p>
                 </div>
 
-                 <div className="order-item-total">
-                  {formatPrice(item.total_price || item.subtotal)}
-                </div>>
+                <div className="order-item-total">
+                  {formatPrice(Number(item.total_price || (item.quantity * (item.product?.final_price || item.price || 0))))}
+                </div>
               </div>
             ))}
 

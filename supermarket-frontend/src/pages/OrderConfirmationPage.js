@@ -123,10 +123,10 @@ function OrderConfirmationPage() {
                   </div>
                   <div className="order-item-details">
                     <h4>{item.product_name}</h4>
-                    <p>Qty: {item.quantity} × {formatPrice(item.product_price)}</p>
+                    <p>Qty: {item.quantity} × {formatPrice(Number(item.product_price || 0))}</p>
                   </div>
                   <div className="order-item-total">
-                    {formatPrice(Number(item.total_price))}
+                    {formatPrice(Number(item.total_price || (item.quantity * (item.product_price || 0))))}
                   </div>
                 </div>
               ))}

@@ -43,20 +43,32 @@ class CreateOrderView(APIView):
     
     @transaction.atomic
     def post(self, request):
+        print(f"DEBUG: Order creation request from user {request.user.id}")
+        print(f"DEBUG: Request data: {request.data}")
+        
         serializer = CreateOrderSerializer(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            print(f"DEBUG: Serializer errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         # Get user's cart
-        cart = get_object_or_404(Cart, user=request.user)
+        try:
+            cart = Cart.objects.get(user=request.user)
+        except Cart.DoesNotExist:
+            return Response(
+                {'error': 'Cart not found'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        if not cart.items.exists():
+        cart_items = cart.items.all()
+        if not cart_items.exists():
             return Response(
                 {'error': 'Cart is empty'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         # Calculate totals
-        subtotal = cart.subtotal
+        subtotal = sum(item.total_price for item in cart_items)
         delivery_fee = serializer.validated_data.get('delivery_fee', 0)
         total = subtotal + delivery_fee
         

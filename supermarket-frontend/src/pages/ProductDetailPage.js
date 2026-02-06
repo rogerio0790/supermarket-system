@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { 
+  FaStar, 
+  FaCheckCircle, 
+  FaTimesCircle, 
+  FaShoppingCart, 
+  FaTruck, 
+  FaBolt, 
+  FaLock, 
+  FaUndo, 
+  FaCheck,
+  FaRobot,
+  FaMagic
+} from 'react-icons/fa';
+import { BsBoxSeam } from 'react-icons/bs';
 import Header from '../components/common/Header';
 import ProductImageGallery from '../components/products/ProductImageGallery';
 import ProductReviews from '../components/products/ProductReviews';
@@ -27,6 +41,7 @@ function ProductDetailPage() {
 
   useEffect(() => {
     fetchProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   const fetchProduct = async () => {
@@ -116,7 +131,9 @@ function ProductDetailPage() {
       <div className="product-detail-page">
         <Header />
         <div className="error-container">
-          <div className="error-icon">📦</div>
+          <div className="error-icon">
+            <BsBoxSeam size={80} color="#999" />
+          </div>
           <h2>Product Not Found</h2>
           <p>Sorry, we couldn't find the product you're looking for.</p>
           <button onClick={() => navigate('/products')} className="btn-back-home">
@@ -164,7 +181,9 @@ function ProductDetailPage() {
               {/* Rating */}
               <div className="product-rating">
                 <div className="stars">
-                  ⭐⭐⭐⭐⭐
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} color="#ffc107" size={20} />
+                  ))}
                 </div>
                 <span className="rating-count">4.5 (128 reviews)</span>
               </div>
@@ -196,12 +215,12 @@ function ProductDetailPage() {
               <div className="stock-info">
                 {product.is_in_stock ? (
                   <div className="in-stock">
-                    <span className="status-icon">✓</span>
+                    <FaCheckCircle className="status-icon" />
                     <span>In Stock ({product.stock} available)</span>
                   </div>
                 ) : (
                   <div className="out-of-stock">
-                    <span className="status-icon">✗</span>
+                    <FaTimesCircle className="status-icon" />
                     <span>Currently Unavailable</span>
                   </div>
                 )}
@@ -216,12 +235,12 @@ function ProductDetailPage() {
                 >
                   {generatingAI ? (
                     <>
-                      <span className="ai-loader">🤖</span>
+                      <FaRobot className="ai-loader" />
                       Generating AI Description...
                     </>
                   ) : (
                     <>
-                      <span className="ai-icon">✨</span>
+                      <FaMagic className="ai-icon" />
                       Generate AI Product Description
                     </>
                   )}
@@ -283,14 +302,14 @@ function ProductDetailPage() {
 
                 <div className="delivery-info">
                   <div className="delivery-item">
-                    <span className="icon">🚚</span>
+                    <FaTruck className="icon" size={24} />
                     <div>
                       <strong>FREE Delivery</strong>
                       <p>On orders over RWF 50,000</p>
                     </div>
                   </div>
                   <div className="delivery-item">
-                    <span className="icon">⚡</span>
+                    <FaBolt className="icon" size={24} />
                     <div>
                       <strong>Fast Delivery</strong>
                       <p>Within 30 minutes</p>
@@ -326,7 +345,7 @@ function ProductDetailPage() {
                         onClick={handleAddToCart}
                         className="btn-add-to-cart"
                       >
-                        🛒 Add to Cart
+                        <FaShoppingCart /> Add to Cart
                       </button>
                       <button 
                         onClick={handleBuyNow}
@@ -348,15 +367,15 @@ function ProductDetailPage() {
                 {/* Trust Badges */}
                 <div className="trust-badges">
                   <div className="badge">
-                    <span>🔒</span>
+                    <FaLock />
                     <span>Secure Payment</span>
                   </div>
                   <div className="badge">
-                    <span>↩️</span>
+                    <FaUndo />
                     <span>Easy Returns</span>
                   </div>
                   <div className="badge">
-                    <span>✓</span>
+                    <FaCheck />
                     <span>Quality Guarantee</span>
                   </div>
                 </div>

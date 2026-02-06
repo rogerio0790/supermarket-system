@@ -4,6 +4,15 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useModal } from '../../context/ModalContext';
 import api from '../../api/axios';
+import {
+  FiSearch,
+  FiUser,
+  FiShoppingBag,
+  FiLogOut,
+  FiSun,
+  FiMoon,
+  FiMenu
+} from 'react-icons/fi';
 import './Header.css';
 
 function Header() {
@@ -12,18 +21,15 @@ function Header() {
   const { openAuthModal } = useModal();
   const navigate = useNavigate();
   const location = useLocation();
+
   const [categories, setCategories] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return localStorage.getItem('theme') === 'dark';
-  });
+  const [isDarkMode, setIsDarkMode] = useState(
+    () => localStorage.getItem('theme') === 'dark'
+  );
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add('dark-theme');
-    } else {
-      document.body.classList.remove('dark-theme');
-    }
+    document.body.classList.toggle('dark-theme', isDarkMode);
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
@@ -45,18 +51,19 @@ function Header() {
     navigate('/');
   };
 
-
-
   const isActive = (path) => {
     if (path === '/products') {
-      return location.pathname === '/products' && (!location.search || location.search === '?category=all');
+      return (
+        location.pathname === '/products' &&
+        (!location.search || location.search === '?category=all')
+      );
     }
     return location.pathname + location.search === path;
   };
 
   return (
     <header className="site-header">
-      {/* 1. Secondary Navbar (Top Bar) - Corporate Links */}
+      {/* TOP BAR */}
       <div className="top-bar">
         <div className="header-container">
           <nav className="corporate-nav">
@@ -66,25 +73,28 @@ function Header() {
             <Link to="/careers" className={location.pathname === '/careers' ? 'active' : ''}>Careers</Link>
             <Link to="/help" className={location.pathname === '/help' ? 'active' : ''}>Help & FAQ</Link>
           </nav>
+
           <div className="top-bar-right">
-            <span className="delivery-info">🚚 Free delivery on orders over $50</span>
-            <button 
-              className="theme-toggle" 
+            <span className="delivery-info">
+              Free delivery on orders over $50
+            </span>
+            <button
+              className="theme-toggle"
               onClick={() => setIsDarkMode(!isDarkMode)}
-              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              title="Toggle theme"
             >
-              {isDarkMode ? '☀️' : '🌙'}
+              {isDarkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* 2. Main Header - Branding, Search, User Actions */}
+      {/* MAIN HEADER */}
       <div className="main-header">
         <div className="header-container">
           <Link to="/" className="logo">
             <div className="logo-icon-wrapper">
-              <span className="logo-icon">🛒</span>
+              <FiShoppingBag size={28} />
             </div>
             <div className="logo-text">
               <h1>RUKARA</h1>
@@ -93,11 +103,14 @@ function Header() {
           </Link>
 
           <div className="search-bar-wrapper">
-            <form className="search-bar" onSubmit={(e) => {
-              e.preventDefault();
-              const query = e.target.search.value;
-              navigate(`/products?search=${query}`);
-            }}>
+            <form
+              className="search-bar"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const query = e.target.search.value;
+                navigate(`/products?search=${query}`);
+              }}
+            >
               <input
                 type="text"
                 name="search"
@@ -105,7 +118,7 @@ function Header() {
                 autoComplete="off"
               />
               <button type="submit" className="search-btn">
-                <span className="search-icon">🔍</span>
+                <FiSearch size={18} />
               </button>
             </form>
           </div>
@@ -114,33 +127,44 @@ function Header() {
             {user ? (
               <>
                 <Link to="/account" className="action-item">
-                  <span className="action-icon">👤</span>
+                  <FiUser size={20} />
                   <span className="action-label">Account</span>
                 </Link>
+
                 <Link to="/cart" className="action-item cart-action">
                   <div className="cart-icon-wrapper">
-                    <span className="action-icon">🛍️</span>
+                    <FiShoppingBag size={20} />
                     {cartItemsCount > 0 && (
                       <span className="cart-badge">{cartItemsCount}</span>
                     )}
                   </div>
                   <span className="action-label">Cart</span>
                 </Link>
+
                 <button onClick={handleLogout} className="btn-logout">
-                  Logout
+                  <FiLogOut size={16} />
+                  <span>Logout</span>
                 </button>
               </>
             ) : (
               <>
-                <button onClick={() => openAuthModal('login')} className="btn-login">
+                <button
+                  onClick={() => openAuthModal('login')}
+                  className="btn-login"
+                >
                   Sign In
                 </button>
-                <button onClick={() => openAuthModal('register')} className="btn-signup">
+
+                <button
+                  onClick={() => openAuthModal('register')}
+                  className="btn-signup"
+                >
                   Join Now
                 </button>
+
                 <Link to="/cart" className="action-item cart-action">
                   <div className="cart-icon-wrapper">
-                    <span className="action-icon">🛍️</span>
+                    <FiShoppingBag size={20} />
                     {cartItemsCount > 0 && (
                       <span className="cart-badge">{cartItemsCount}</span>
                     )}
@@ -148,31 +172,37 @@ function Header() {
                 </Link>
               </>
             )}
-            <button 
-              className="mobile-menu-toggle" 
+
+            <button
+              className="mobile-menu-toggle"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              <span className="hamburger"></span>
+              <FiMenu size={22} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* 3. Category Menu - Product Categories ONLY */}
+      {/* CATEGORY NAV */}
       <nav className={`category-nav-wrapper ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         <div className="header-container">
           <ul className="category-menu">
             <li className="category-item-all">
-              <Link to="/products?category=all" className={isActive('/products') ? 'active' : ''}>
-                <span className="all-icon">☰</span> All Departments
+              <Link
+                to="/products?category=all"
+                className={isActive('/products') ? 'active' : ''}
+              >
+                <FiMenu size={16} />
+                <span>All Departments</span>
               </Link>
             </li>
+
             {categories.map((category) => {
               const path = `/products?category=${category.id}`;
               return (
                 <li key={category.id}>
-                  <Link 
-                    to={path} 
+                  <Link
+                    to={path}
                     className={isActive(path) ? 'active' : ''}
                   >
                     {category.name}
@@ -183,8 +213,6 @@ function Header() {
           </ul>
         </div>
       </nav>
-
-
     </header>
   );
 }

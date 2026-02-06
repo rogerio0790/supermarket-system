@@ -4,7 +4,10 @@ import ProductCard from '../components/products/ProductCard';
 import CategoryCard from '../components/products/CategoryCard';
 import api from '../api/axios';
 import './HomePage.css';
-import heroImage from '../background.jpeg';
+//import heroImage from '../background.jpeg';
+import heroImage from '../background2.jpg';
+import { FiZap, FiTruck } from 'react-icons/fi';
+
 
 function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -58,10 +61,10 @@ function HomePage() {
             </div>
             <div className="hero-features">
               <div className="feature-item">
-                ⚡ 30-min delivery
+                <FiZap size={18} /> 30-min delivery
               </div>
               <div className="feature-item">
-                🚚 Free above 50,000 Rwf
+                <FiTruck size={18} /> Free above 50,000 Rwf
               </div>
             </div>
           </div>

@@ -70,7 +70,7 @@ class SMSService:
     @staticmethod
     def send_order_confirmation(phone_number, order_number, total, user=None):
         """Send order confirmation SMS"""
-        message = f"Order confirmed! 🎉\n\nOrder #: {order_number}\nTotal: RWF {total:,.0f}\n\nThank you for shopping with RUKARA SUPERMARKET!"
+        message = f"Order confirmed! \n\nOrder #: {order_number}\nTotal: RWF {total:,.0f}\n\nThank you for shopping with RUKARA SUPERMARKET!"
         return SMSService.send_sms(phone_number, message, sms_type='ORDER_CONFIRMATION', user=user)
     
     @staticmethod

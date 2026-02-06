@@ -1,32 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/common/Header';
 import ProductCard from '../components/products/ProductCard';
+import CategoryCard from '../components/products/CategoryCard';
 import api from '../api/axios';
 import './HomePage.css';
 import heroImage from '../background.jpeg';
 
 function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchFeaturedProducts();
-  }, []);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [productsRes, categoriesRes] = await Promise.all([
+          api.get('products/?is_featured=true'),
+          api.get('categories/')
+        ]);
+        
+        setFeaturedProducts(productsRes.data.results || productsRes.data);
+        setCategories(categoriesRes.data.results || categoriesRes.data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load content');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchFeaturedProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('products/?is_featured=true');
-      setFeaturedProducts(response.data.results || response.data);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      setError('Failed to load products');
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchData();
+  }, []);
 
   return (
     <div className="home-page">
@@ -98,6 +105,30 @@ function HomePage() {
             <div className="products-grid">
               {featuredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Shop by Category Section */}
+      <section className="categories-section">
+        <div className="section-container">
+          <div className="section-header">
+            <h2>Shop by Category</h2>
+            <p>Explore our wide range of premium products by department</p>
+          </div>
+
+          {loading && (
+            <div className="loading-state">
+              <p>Loading categories...</p>
+            </div>
+          )}
+
+          {!loading && !error && categories.length > 0 && (
+            <div className="categories-grid">
+              {categories.map((category) => (
+                <CategoryCard key={category.id} category={category} />
               ))}
             </div>
           )}

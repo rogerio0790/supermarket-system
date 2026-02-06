@@ -80,15 +80,20 @@ function ProductDetailPage() {
 
   const handleGenerateAIDescription = async () => {
     setGeneratingAI(true);
+    setAiDescription('');
+    
     try {
-      // TODO: Integrate OpenAI API here
-      // For now, show placeholder
-      setTimeout(() => {
-        setAiDescription(`✨ AI-Generated Description:\n\n${product.name} is a premium quality product that delivers exceptional value. Perfect for daily use, this item combines superior craftsmanship with modern convenience. Customers love its reliability and performance. Stock up now while supplies last!`);
-        setGeneratingAI(false);
-      }, 2000);
+      const response = await api.post(`products/${product.slug}/ai-description/`);
+      
+      if (response.data.success) {
+        setAiDescription(response.data.ai_description);
+      } else {
+        alert('Failed to generate AI description. Please try again.');
+      }
     } catch (error) {
       console.error('AI generation error:', error);
+      alert('Failed to generate AI description. Please try again.');
+    } finally {
       setGeneratingAI(false);
     }
   };

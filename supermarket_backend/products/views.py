@@ -69,3 +69,47 @@ class CategoryProductListView(generics.ListAPIView):
             category__slug=category_slug,
             category__is_active=True
         ).select_related('category')
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import status
+from .grok_service import GrokService
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def generate_ai_description(request, slug):
+    """Generate AI description for a product using Grok"""
+    
+    try:
+        product = Product.objects.get(slug=slug, is_active=True)
+        grok = GrokService()
+        
+        ai_description = grok.generate_product_description(
+            product_name=product.name,
+            category=product.category.name,
+            price=float(product.final_price),
+            unit=product.unit,
+            existing_description=product.description
+        )
+        
+        if ai_description:
+            return Response({
+                'success': True,
+                'ai_description': ai_description,
+                'product_name': product.name
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'success': False,
+                'error': 'Failed to generate description'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+    except Product.DoesNotExist:
+        return Response({
+            'success': False,
+            'error': 'Product not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

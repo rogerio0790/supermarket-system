@@ -12,7 +12,7 @@ import api from '../api/axios';
 import './ProductDetailPage.css';
 
 function ProductDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToCart } = useCart();
@@ -27,12 +27,12 @@ function ProductDetailPage() {
 
   useEffect(() => {
     fetchProduct();
-  }, [id]);
+  }, [slug]);
 
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`products/${id}/`);
+      const response = await api.get(`products/${slug}/`);
       setProduct(response.data);
       setError(null);
     } catch (err) {

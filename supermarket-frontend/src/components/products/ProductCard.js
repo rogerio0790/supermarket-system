@@ -38,7 +38,7 @@ function ProductCard({ product }) {
   };
 
   return (
-    <Link to={`/product/${product.id}`} className="product-card">
+    <Link to={`/product/${product.slug}`} className="product-card">  {/* Changed from product.id to product.slug */}
       <div className="product-image">
         {imageUrl ? (
           <img src={imageUrl} alt={product.name} />

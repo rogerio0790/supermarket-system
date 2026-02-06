@@ -1,22 +1,19 @@
 import os
-from openai import OpenAI
+import google.generativeai as genai
 from decouple import config
 
 class AIService:
-    """Service for AI integration (now using OpenAI)"""
+    """Service for AI integration (now using Google Gemini)"""
     
     def __init__(self):
-        # Use the specific key for this project to avoid conflicts with environment variables
-        self.api_key = config('SUPERMARKET_OPENAI_API_KEY', default=config('GROK_API_KEY', default=None))
-        self.client = OpenAI(
-            api_key=self.api_key,
-            base_url='https://api.openai.com/v1'
-        )
-        # Using gpt-4o-mini as a good balance of speed and quality
-        self.model = "gpt-4o-mini"
+        # Use the specific key for this project
+        self.api_key = config('GEMINI_API_KEY', default="AIzaSyAxLF-zIyopOKV5_-RgYx4aAeFEBNHKL-k")
+        genai.configure(api_key=self.api_key)
+        # Using gemini-flash-latest as a good balance of speed and quality
+        self.model = genai.GenerativeModel('gemini-flash-latest')
     
     def generate_product_description(self, product_name, category, price, unit, existing_description=None):
-        """Generate AI-powered product description using OpenAI"""
+        """Generate AI-powered product description using Gemini"""
         
         prompt = f"""You are an expert copywriter for RUKARA SUPERMARKET, a premium grocery store in Rwanda.
 
@@ -39,27 +36,17 @@ Requirements:
 Write the description now:"""
 
         try:
-            completion = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a professional copywriter specializing in grocery and supermarket product descriptions."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                temperature=0.7,
-                max_tokens=500
+            response = self.model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.7,
+                    max_output_tokens=500,
+                )
             )
             
-            return completion.choices[0].message.content.strip()
+            return response.text.strip()
             
         except Exception as e:
             error_msg = str(e)
-            print(f"Error generating description with OpenAI: {error_msg}")
-            if "403" in error_msg or "credits" in error_msg.lower() or "insufficient_quota" in error_msg:
-                return "ERROR_NO_CREDITS: Your OpenAI account has no credits or insufficient quota."
+            print(f"Error generating description with Gemini: {error_msg}")
             return None

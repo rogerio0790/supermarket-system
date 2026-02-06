@@ -56,5 +56,8 @@ Write the description now:"""
             return completion.choices[0].message.content.strip()
             
         except Exception as e:
-            print(f"Error generating description with Grok: {str(e)}")
+            error_msg = str(e)
+            print(f"Error generating description with Grok: {error_msg}")
+            if "403" in error_msg or "credits" in error_msg.lower():
+                return "ERROR_NO_CREDITS: Your xAI account has no credits. Please top up at console.x.ai."
             return None

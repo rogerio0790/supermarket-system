@@ -92,6 +92,12 @@ def generate_ai_description(request, slug):
         )
         
         if ai_description:
+            if ai_description.startswith("ERROR_NO_CREDITS"):
+                return Response({
+                    'success': False,
+                    'error': ai_description.split(": ")[1]
+                }, status=status.HTTP_402_PAYMENT_REQUIRED)
+                
             return Response({
                 'success': True,
                 'ai_description': ai_description,

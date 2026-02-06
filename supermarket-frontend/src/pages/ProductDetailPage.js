@@ -88,11 +88,12 @@ function ProductDetailPage() {
       if (response.data.success) {
         setAiDescription(response.data.ai_description);
       } else {
-        alert('Failed to generate AI description. Please try again.');
+        alert(response.data.error || 'Failed to generate AI description. Please try again.');
       }
     } catch (error) {
       console.error('AI generation error:', error);
-      alert('Failed to generate AI description. Please try again.');
+      const errorMsg = error.response?.data?.error || 'Failed to generate AI description. Please try again.';
+      alert(errorMsg);
     } finally {
       setGeneratingAI(false);
     }

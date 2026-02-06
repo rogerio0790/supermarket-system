@@ -49,7 +49,7 @@ function HomePage() {
             <div className="weekend-badge"><i>We are hiring!</i></div>
             <h1 className="hero-title">
              WELCOME TO RUKARA SUPERMARKET<br />
-              <span className="hero-title-highlight">Shop with us!</span>
+              <span className="hero-title-highlight">Musanze's Premier Marketplace</span>
             </h1>
             <p className="hero-description">
              Your one-stop shop for fresh foods, beverages, household essentials, and more at unbeatable prices.

@@ -15,9 +15,9 @@ class AIService:
     def generate_product_description(self, product_name, category, price, unit, existing_description=None):
         """Generate AI-powered product description using Gemini"""
         
-        prompt = f"""You are an expert copywriter for RUKARA SUPERMARKET, a premium grocery store in Rwanda.
+        prompt = f"""You are a knowledgeable product information specialist for RUKARA SUPERMARKET in Rwanda.
 
-Generate an engaging, informative product description for:
+Generate an informative description for:
 
 Product: {product_name}
 Category: {category}
@@ -26,12 +26,23 @@ Unit: {unit}
 {f"Current Description: {existing_description}" if existing_description else ""}
 
 Requirements:
-- Write 2-3 compelling paragraphs (150-200 words total)
-- Highlight quality, freshness, and value
-- Include benefits and usage suggestions
-- Use persuasive but natural language
+- If this is a well-known brand (like beer, wine, spirits, or established food brands), focus on:
+  * Brand history and origin
+  * When and where it was founded
+  * What makes this brand unique or notable
+  * Traditional brewing/production methods (if applicable)
+  * Flavor profile or characteristics
+  
+- If this is a general product, provide:
+  * Product information and characteristics
+  * Quality indicators
+  * Usage suggestions
+  * Nutritional or practical benefits
+
+- Write 2-3 informative paragraphs (150-200 words total)
+- Use educational and factual tone, not purely advertising
 - Be culturally relevant to Rwandan customers
-- Focus on why customers should buy this product
+- Avoid excessive marketing language
 
 Write the description now:"""
 

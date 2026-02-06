@@ -5,9 +5,23 @@
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, #067d38 0%, #048834 100%);
+  background: linear-gradient(135deg, #067d38 0%, #046e2b 100%);
+  background-size: 200% 200%;
   color: white;
   padding: 60px 24px;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .hero-container {

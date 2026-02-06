@@ -2,19 +2,21 @@ import os
 from openai import OpenAI
 from decouple import config
 
-class GrokService:
-    """Service for Grok AI integration"""
+class AIService:
+    """Service for AI integration (now using OpenAI)"""
     
     def __init__(self):
-        self.api_key = config('GROK_API_KEY')
+        # Use the specific key for this project to avoid conflicts with environment variables
+        self.api_key = config('SUPERMARKET_OPENAI_API_KEY', default=config('GROK_API_KEY', default=None))
         self.client = OpenAI(
             api_key=self.api_key,
-            base_url="https://api.x.ai/v1"
+            base_url='https://api.openai.com/v1'
         )
-        self.model = "grok-beta"
+        # Using gpt-4o-mini as a good balance of speed and quality
+        self.model = "gpt-4o-mini"
     
     def generate_product_description(self, product_name, category, price, unit, existing_description=None):
-        """Generate AI-powered product description using Grok"""
+        """Generate AI-powered product description using OpenAI"""
         
         prompt = f"""You are an expert copywriter for RUKARA SUPERMARKET, a premium grocery store in Rwanda.
 
@@ -50,14 +52,14 @@ Write the description now:"""
                     }
                 ],
                 temperature=0.7,
-                max_tokens=300
+                max_tokens=500
             )
             
             return completion.choices[0].message.content.strip()
             
         except Exception as e:
             error_msg = str(e)
-            print(f"Error generating description with Grok: {error_msg}")
-            if "403" in error_msg or "credits" in error_msg.lower():
-                return "ERROR_NO_CREDITS: Your xAI account has no credits. Please top up at console.x.ai."
+            print(f"Error generating description with OpenAI: {error_msg}")
+            if "403" in error_msg or "credits" in error_msg.lower() or "insufficient_quota" in error_msg:
+                return "ERROR_NO_CREDITS: Your OpenAI account has no credits or insufficient quota."
             return None

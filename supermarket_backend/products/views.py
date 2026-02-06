@@ -72,7 +72,7 @@ class CategoryProductListView(generics.ListAPIView):
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .grok_service import GrokService
+from .ai_service import AIService
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -81,9 +81,9 @@ def generate_ai_description(request, slug):
     
     try:
         product = Product.objects.get(slug=slug, is_active=True)
-        grok = GrokService()
+        ai_service = AIService()
         
-        ai_description = grok.generate_product_description(
+        ai_description = ai_service.generate_product_description(
             product_name=product.name,
             category=product.category.name,
             price=float(product.final_price),

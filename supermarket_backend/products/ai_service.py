@@ -9,8 +9,8 @@ class AIService:
         # Use the specific key for this project
         self.api_key = config('GEMINI_API_KEY', default="AIzaSyAxLF-zIyopOKV5_-RgYx4aAeFEBNHKL-k")
         genai.configure(api_key=self.api_key)
-        # Using gemini-flash-latest as a good balance of speed and quality
-        self.model = genai.GenerativeModel('gemini-flash-latest')
+        # Using gemini-2.5-flash as it's available in this environment
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
     
     def generate_product_description(self, product_name, category, price, unit, existing_description=None):
         """Generate AI-powered product description using Gemini"""
@@ -44,9 +44,11 @@ Write the description now:"""
                 )
             )
             
-            return response.text.strip()
+            if response.candidates and response.candidates[0].content.parts:
+                return response.text.strip()
+            else:
+                return "AI was unable to generate a description for this product due to safety filters or other restrictions."
             
         except Exception as e:
-            error_msg = str(e)
-            print(f"Error generating description with Gemini: {error_msg}")
+            print(f"Error generating description with Gemini: {str(e)}")
             return None

@@ -132,3 +132,26 @@
 .auth-footer a:hover {
   text-decoration: underline;
 }
+.success-message {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.google-login-container {
+  transition: transform 0.2s;
+}
+
+.google-login-container:hover {
+  transform: translateY(-2px);
+}
+
+.profile-header {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}

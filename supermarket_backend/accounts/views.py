@@ -3,7 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
+User = get_user_model()
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 from notifications.models import OTP
@@ -124,3 +125,103 @@ class ChangePasswordView(APIView):
 @ensure_csrf_cookie
 def get_csrf_token(request):
     return JsonResponse({'detail': 'CSRF cookie set'})
+from django.core.mail import send_mail
+from django.conf import settings
+from notifications.models import PasswordResetOTP
+from django.utils import timezone
+
+class ForgotPasswordView(APIView):
+    """Send password reset OTP to email"""
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            user = User.objects.get(email=email)
+            # Create OTP
+            otp = PasswordResetOTP.objects.create(user=user, email=email)
+            
+            # Send email (console backend by default)
+            send_mail(
+                'Password Reset OTP',
+                f'Your OTP for password reset is: {otp.otp_code}. It expires in 1 hour.',
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+            
+            return Response({'message': 'OTP sent to your email.'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            # For security, don't reveal if user exists
+            return Response({'message': 'If an account exists with this email, an OTP has been sent.'}, status=status.HTTP_200_OK)
+
+class ResetPasswordView(APIView):
+    """Reset password using OTP"""
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        email = request.data.get('email')
+        otp_code = request.data.get('otp')
+        new_password = request.data.get('password')
+        
+        if not all([email, otp_code, new_password]):
+            return Response({'error': 'All fields are required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            otp = PasswordResetOTP.objects.get(email=email, otp_code=otp_code, is_verified=False)
+            if otp.is_expired():
+                return Response({'error': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
+                
+            user = otp.user
+            user.set_password(new_password)
+            user.save()
+            
+            otp.is_verified = True
+            otp.save()
+            
+            return Response({'message': 'Password reset successful.'}, status=status.HTTP_200_OK)
+        except PasswordResetOTP.DoesNotExist:
+            return Response({'error': 'Invalid OTP or email'}, status=status.HTTP_400_BAD_REQUEST)
+
+class GoogleLoginView(APIView):
+    """Google Login/Register"""
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        email = request.data.get('email')
+        first_name = request.data.get('first_name', '')
+        last_name = request.data.get('last_name', '')
+        social_id = request.data.get('social_id')
+        avatar = request.data.get('avatar', '')
+        
+        if not email or not social_id:
+            return Response({'error': 'Email and social_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={
+                'first_name': first_name,
+                'last_name': last_name,
+                'social_id': social_id,
+                'avatar': avatar,
+                'is_active': True,  # Google users are verified
+                'user_type': 'CUSTOMER'
+            }
+        )
+        
+        if not created:
+            # Update social_id and avatar if not set
+            user.social_id = social_id
+            user.avatar = avatar
+            user.is_active = True
+            user.save()
+            
+        login(request, user)
+        
+        return Response({
+            'user': UserSerializer(user).data,
+            'message': 'Google login successful.'
+        }, status=status.HTTP_200_OK)

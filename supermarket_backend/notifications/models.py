@@ -119,3 +119,26 @@ class SMSLog(models.Model):
     
     def __str__(self):
         return f"SMS to {self.phone_number} - {self.sms_type}"
+
+class PasswordResetOTP(models.Model):
+    """OTP for password reset"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    email = models.EmailField()
+    otp_code = models.CharField(max_length=6)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.otp_code:
+            import random
+            self.otp_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        if not self.expires_at:
+            from django.utils import timezone
+            from datetime import timedelta
+            self.expires_at = timezone.now() + timedelta(hours=1)
+        super().save(*args, **kwargs)
+
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.expires_at

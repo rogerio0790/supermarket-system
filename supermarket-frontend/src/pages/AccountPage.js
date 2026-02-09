@@ -96,6 +96,15 @@ function AccountPage() {
       <Header />
       <div className="account-container">
         <h1>My Account</h1>
+        {user.avatar && (
+          <div className="profile-header" style={{display: 'flex', alignItems: 'center', marginBottom: '30px'}}>
+            <img src={user.avatar} alt="Profile" style={{width: '80px', height: '80px', borderRadius: '50%', marginRight: '20px', border: '3px solid #00c853'}} />
+            <div>
+              <h2 style={{margin: 0}}>{user.first_name} {user.last_name}</h2>
+              <p style={{margin: 0, color: '#666'}}>{user.email}</p>
+            </div>
+          </div>
+        )}
         
         <div className="account-tabs">
           <button 

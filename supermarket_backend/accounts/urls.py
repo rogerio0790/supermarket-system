@@ -6,6 +6,9 @@ from .views import (
     UserProfileView,
     UserProfileUpdateView,
     ChangePasswordView,
+    ForgotPasswordView,
+    ResetPasswordView,
+    GoogleLoginView,
     get_csrf_token  # Add this import
 )
 from .admin_views import (
@@ -22,6 +25,9 @@ urlpatterns = [
     # Customer endpoints
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('login/', UserLoginView.as_view(), name='login'),
+    path('google-login/', GoogleLoginView.as_view(), name='google-login'),
+    path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
+    path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
     path('logout/', UserLogoutView.as_view(), name='logout'),
     path('profile/', UserProfileView.as_view(), name='profile'),
     path('profile/update/', UserProfileUpdateView.as_view(), name='profile-update'),

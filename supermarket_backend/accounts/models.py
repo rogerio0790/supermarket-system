@@ -44,6 +44,8 @@ class User(AbstractUser):
     # Additional customer fields
     address = models.TextField(blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
+    social_id = models.CharField(max_length=255, blank=True, null=True)
+    avatar = models.URLField(max_length=500, blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -5,6 +5,8 @@ import { CartProvider } from './context/CartContext';
 import { ModalProvider, useModal } from './context/ModalContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import RegisterPage from './pages/RegisterPage';
 import VerifyOTPPage from './pages/VerifyOTPPage';
 import ProductListPage from './pages/ProductListPage';
@@ -19,13 +21,14 @@ import OrderConfirmationModal from './components/common/OrderConfirmationModal';
 
 function AppContent() {
   const { authModal, closeAuthModal, orderModal, closeOrderModal } = useModal();
-
   return (
     <div className="App">
       <main style={{ minHeight: 'calc(100vh - 100px)' }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-otp" element={<VerifyOTPPage />} />
           <Route path="/products" element={<ProductListPage />} />

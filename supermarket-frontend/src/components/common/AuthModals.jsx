@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 import api from '../../api/axios';
 import './AuthModals.css';
 
 const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
-  const { login, register } = useAuth();
-  const [mode, setMode] = useState(initialMode); // 'login', 'register', 'otp', 'success'
+  const { login, register, googleLogin } = useAuth();
+  const [mode, setMode] = useState(initialMode); // 'login', 'register', 'otp', 'forgot-password', 'reset-password', 'success'
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -17,6 +19,7 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
   const modalRef = useRef();
   const otpRefs = useRef([]);
@@ -24,6 +27,7 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
   useEffect(() => {
     setMode(initialMode);
     setError('');
+    setMessage('');
     setFormData({
       email: '',
       password: '',
@@ -119,6 +123,26 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    setError('');
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      await googleLogin({
+        email: decoded.email,
+        first_name: decoded.given_name,
+        last_name: decoded.family_name,
+        social_id: decoded.sub,
+        avatar: decoded.picture
+      });
+      onClose();
+    } catch (err) {
+      setError('Google login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -174,6 +198,48 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
     }
   };
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      await api.post('auth/forgot-password/', { email: formData.email });
+      setMode('reset-password');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to send reset code');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    const otpCode = otp.join('');
+    if (otpCode.length < 6) {
+      setError('Please enter the 6-digit reset code');
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      await api.post('auth/reset-password/', {
+        email: formData.email,
+        otp: otpCode,
+        password: formData.password,
+      });
+      setMessage('Password reset successful! Please sign in.');
+      setMode('login');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to reset password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleResendOtp = async () => {
     if (resendTimer > 0) return;
     setLoading(true);
@@ -202,6 +268,26 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
             <div className="auth-form-wrapper">
               <h2>Welcome Back</h2>
               <p>Sign in to continue shopping</p>
+              
+              {message && <div className="auth-success" style={{color: '#00c853', marginBottom: '15px', textAlign: 'center'}}>{message}</div>}
+              
+              <div className="google-auth-container" style={{marginBottom: '20px', display: 'flex', justifyContent: 'center'}}>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError('Google login failed')}
+                  useOneTap
+                  shape="pill"
+                  theme="outline"
+                  width="100%"
+                />
+              </div>
+
+              <div className="auth-divider" style={{display: 'flex', alignItems: 'center', margin: '15px 0', color: '#999'}}>
+                <div style={{flex: 1, height: '1px', background: '#eee'}}></div>
+                <span style={{padding: '0 10px', fontSize: '12px'}}>OR</span>
+                <div style={{flex: 1, height: '1px', background: '#eee'}}></div>
+              </div>
+
               <form onSubmit={handleLogin}>
                 <div className="form-group">
                   <label>Email Address</label>
@@ -215,7 +301,10 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Password</label>
+                  <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <label>Password</label>
+                    <button type="button" className="text-link" onClick={() => setMode('forgot-password')} style={{fontSize: '12px', background: 'none', border: 'none', color: '#666', cursor: 'pointer'}}>Forgot Password?</button>
+                  </div>
                   <input
                     type="password"
                     name="password"
@@ -240,6 +329,25 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
             <div className="auth-form-wrapper">
               <h2>Create Account</h2>
               <p>Join Rukara Supermarket today</p>
+
+              <div className="google-auth-container" style={{marginBottom: '20px', display: 'flex', justifyContent: 'center'}}>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError('Google login failed')}
+                  useOneTap
+                  shape="pill"
+                  theme="outline"
+                  width="100%"
+                  text="signup_with"
+                />
+              </div>
+
+              <div className="auth-divider" style={{display: 'flex', alignItems: 'center', margin: '15px 0', color: '#999'}}>
+                <div style={{flex: 1, height: '1px', background: '#eee'}}></div>
+                <span style={{padding: '0 10px', fontSize: '12px'}}>OR</span>
+                <div style={{flex: 1, height: '1px', background: '#eee'}}></div>
+              </div>
+
               <form onSubmit={handleRegister}>
                 <div className="form-row">
                   <div className="form-group">
@@ -319,6 +427,82 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
               <div className="auth-switch">
                 Already have an account? <button onClick={() => setMode('login')}>Sign In</button>
               </div>
+            </div>
+          )}
+
+          {mode === 'forgot-password' && (
+            <div className="auth-form-wrapper">
+              <h2>Forgot Password</h2>
+              <p>Enter your email to receive a reset code</p>
+              <form onSubmit={handleForgotPassword}>
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="name@example.com"
+                    required
+                  />
+                </div>
+                {error && <div className="auth-error">{error}</div>}
+                <button type="submit" className="auth-submit-btn" disabled={loading}>
+                  {loading ? <span className="spinner"></span> : 'Send Reset Code'}
+                </button>
+              </form>
+              <div className="auth-switch">
+                Back to <button onClick={() => setMode('login')}>Sign In</button>
+              </div>
+            </div>
+          )}
+
+          {mode === 'reset-password' && (
+            <div className="auth-form-wrapper">
+              <h2>Reset Password</h2>
+              <p>Enter the code sent to {formData.email}</p>
+              <form onSubmit={handleResetPassword}>
+                <div className="otp-input-container">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      maxLength="1"
+                      value={digit}
+                      ref={(el) => (otpRefs.current[index] = el)}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                      onPaste={handleOtpPaste}
+                    />
+                  ))}
+                </div>
+                <div className="form-group">
+                  <label>New Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Confirm New Password</label>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+                {error && <div className="auth-error">{error}</div>}
+                <button type="submit" className="auth-submit-btn" disabled={loading}>
+                  {loading ? <span className="spinner"></span> : 'Reset Password'}
+                </button>
+              </form>
             </div>
           )}
 

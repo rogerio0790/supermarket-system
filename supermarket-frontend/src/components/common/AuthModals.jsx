@@ -275,7 +275,7 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() => setError('Google login failed')}
-                  useOneTap
+                  useOneTap={false}
                   shape="pill"
                   theme="outline"
                   width="100%"
@@ -334,7 +334,7 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() => setError('Google login failed')}
-                  useOneTap
+                  useOneTap={false}
                   shape="pill"
                   theme="outline"
                   width="100%"

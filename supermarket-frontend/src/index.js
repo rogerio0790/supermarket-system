@@ -5,10 +5,18 @@ import App from './App';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import reportWebVitals from './reportWebVitals';
 
+const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+
+if (!googleClientId) {
+  console.warn("⚠️ Google Client ID is missing! Please check your .env file and restart the server.");
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}><App /></GoogleOAuthProvider>
+    <GoogleOAuthProvider clientId={googleClientId || ""}>
+      <App />
+    </GoogleOAuthProvider>
   </React.StrictMode>
 );
 

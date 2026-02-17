@@ -128,6 +128,7 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
     setError('');
     try {
       const decoded = jwtDecode(credentialResponse.credential);
+      console.log('Google user data:', decoded);
       await googleLogin({
         email: decoded.email,
         first_name: decoded.given_name,
@@ -137,7 +138,10 @@ const AuthModals = ({ isOpen, initialMode = 'login', onClose }) => {
       });
       onClose();
     } catch (err) {
-      setError('Google login failed. Please try again.');
+      // Show the actual error message from backend
+      const errorMessage = err.response?.data?.error || err.message || 'Google login failed. Please try again.';
+      console.error('Google login error:', err);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

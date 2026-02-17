@@ -191,37 +191,44 @@ class GoogleLoginView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        email = request.data.get('email')
-        first_name = request.data.get('first_name', '')
-        last_name = request.data.get('last_name', '')
-        social_id = request.data.get('social_id')
-        avatar = request.data.get('avatar', '')
-        
-        if not email or not social_id:
-            return Response({'error': 'Email and social_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            email = request.data.get('email')
+            first_name = request.data.get('first_name', '')
+            last_name = request.data.get('last_name', '')
+            social_id = request.data.get('social_id')
+            avatar = request.data.get('avatar', '')
             
-        user, created = User.objects.get_or_create(
-            email=email,
-            defaults={
-                'first_name': first_name,
-                'last_name': last_name,
-                'social_id': social_id,
-                'avatar': avatar,
-                'is_active': True,  # Google users are verified
-                'user_type': 'CUSTOMER'
-            }
-        )
-        
-        if not created:
-            # Update social_id and avatar if not set
-            user.social_id = social_id
-            user.avatar = avatar
-            user.is_active = True
-            user.save()
+            print(f"Google Login Attempt: {email}, social_id: {social_id}")
             
-        login(request, user)
-        
-        return Response({
-            'user': UserSerializer(user).data,
-            'message': 'Google login successful.'
-        }, status=status.HTTP_200_OK)
+            if not email or not social_id:
+                return Response({'error': 'Email and social_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+                
+            user, created = User.objects.get_or_create(
+                email=email,
+                defaults={
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'social_id': social_id,
+                    'avatar': avatar,
+                    'is_active': True,  # Google users are verified
+                    'user_type': 'CUSTOMER'
+                }
+            )
+            
+            if not created:
+                # Update social_id and avatar if not set
+                user.social_id = social_id
+                user.avatar = avatar
+                user.is_active = True
+                user.save()
+                
+            login(request, user)
+            print(f"User logged in: {user.email}")
+            
+            return Response({
+                'user': UserSerializer(user).data,
+                'message': 'Google login successful.'
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Google Login Error: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/common/Header';
 import ProductCard from '../components/products/ProductCard';
 import CategoryCard from '../components/products/CategoryCard';
+import { SkeletonCard, SkeletonCategoryCard } from '../components/common/Skeleton';
 import api from '../api/axios';
 import './HomePage.css';
 //import heroImage from '../background.jpeg';
@@ -86,9 +87,11 @@ function HomePage() {
             <p>Handpicked fresh items just for you</p>
           </div>
 
-          {loading && (
-            <div className="loading-state">
-              <p>Loading products...</p>
+                    {loading && (
+            <div className="products-grid">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <SkeletonCard key={index} />
+              ))}
             </div>
           )}
 

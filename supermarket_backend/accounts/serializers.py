@@ -43,10 +43,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             last_name=validated_data['last_name'],
             phone_number=validated_data.get('phone_number', ''),
             address=validated_data.get('address', ''),
-            city=validated_data.get('city',
-            'avatar', ''),
+            city=validated_data.get('city', ''),
             user_type='CUSTOMER'
         )
+
         return user
 
 

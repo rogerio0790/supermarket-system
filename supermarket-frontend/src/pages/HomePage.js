@@ -5,8 +5,8 @@ import CategoryCard from '../components/products/CategoryCard';
 import { SkeletonCard, SkeletonCategoryCard } from '../components/common/Skeleton';
 import api from '../api/axios';
 import './HomePage.css';
-//import heroImage from '../background.jpeg';
-import heroImage from '../background2.jpg';
+import heroImage from '../background.jpeg';
+//import heroImage from '../background2.jpg';
 import { FiZap, FiTruck } from 'react-icons/fi';
 
 

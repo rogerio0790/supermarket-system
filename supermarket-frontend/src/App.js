@@ -57,6 +57,9 @@ function AppContent() {
 }
 
 function App() {
+  // Initialize scroll effects
+  import('./utils/scrollEffects.js');
+
   return (
     <AuthProvider>
       <CartProvider>

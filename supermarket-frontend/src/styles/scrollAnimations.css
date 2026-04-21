@@ -1,0 +1,115 @@
+/* Modern Smooth Scrolling Animations */
+
+/* Smooth scrolling for entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom properties for easing */
+:root {
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-duration: 0.3s;
+  --stagger-delay: 0.1s;
+  --hover-scale: 1.05;
+  --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Fade-in slide-up animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger for grids/lists */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp var(--animation-duration) var(--ease-in-out) forwards;
+  will-change: transform, opacity;
+}
+
+/* Data attribute for staggered */
+.scroll-animate[data-stagger]::before {
+  content: attr(data-stagger);
+  display: block;
+  height: 0;
+  visibility: hidden;
+}
+
+.scroll-animate[data-stagger="1"] { animation-delay: calc(var(--stagger-delay) * 1); }
+.scroll-animate[data-stagger="2"] { animation-delay: calc(var(--stagger-delay) * 2); }
+.scroll-animate[data-stagger="3"] { animation-delay: calc(var(--stagger-delay) * 3); }
+.scroll-animate[data-stagger="4"] { animation-delay: calc(var(--stagger-delay) * 4); }
+.scroll-animate[data-stagger="5"] { animation-delay: calc(var(--stagger-delay) * 5); }
+
+/* Hover animations for cards/buttons */
+.card-hover, .btn-hover {
+  transition: all var(--animation-duration) var(--ease-in-out);
+}
+
+.card-hover:hover {
+  transform: var(--hover-scale);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Parallax backgrounds */
+.parallax-bg {
+  transition: transform 0.1s var(--ease-in-out);
+  will-change: transform;
+}
+
+/* Scroll progress indicator */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00c853, #4caf50);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.1s var(--ease-in-out);
+  z-index: 1000;
+}
+
+/* Lazy load fade */
+.lazy-fade {
+  opacity: 0;
+  transition: opacity var(--animation-duration) var(--ease-in-out);
+}
+
+.lazy-fade.loaded {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .scroll-animate {
+    transform: translateY(20px);
+  }
+  
+  .card-hover:hover {
+    transform: none;
+  }
+}
+

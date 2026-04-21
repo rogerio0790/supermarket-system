@@ -150,6 +150,7 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'http://172.20.10.3:3000',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -170,6 +171,7 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'http://172.20.10.3:3000',
 ]
 
 SESSION_COOKIE_SAMESITE = 'Lax'

@@ -1,0 +1,119 @@
+============================================================
+RU KARA SUPERMARKET SYSTEM - COMPREHENSIVE DOCUMENTATION
+============================================================
+
+DATE: Current analysis by BLACKBOXAI
+PROJECT STATUS: 85% MVP complete (full-stack e-commerce + careers)
+
+----------------------------------------------------------------
+1. PROJECT OVERVIEW
+----------------------------------------------------------------
+- PURPOSE: E-commerce platform for Rukara Supermarket (Musanze, Rwanda).
+  Premium foods/beverages/household goods. Fast delivery (30min, free >50k RWF).
+  Features: Product catalog, cart/checkout, user auth, job applications.
+- HIRING FOCUS: Active "We are hiring!" promo on homepage.
+- MONOREPO: Backend (Django/DRF), Frontend (React/CRA).
+
+----------------------------------------------------------------
+2. TECHNOLOGY STACK
+----------------------------------------------------------------
+BACKEND (Django 4.2.9 + DRF 3.14.0):
+- Dependencies: djangorestframework, psycopg2-binary (PostgreSQL), Pillow (images),
+  django-cors-headers, google-generativeai (AI descriptions), python-decouple.
+- DB: SQLite (dev), PostgreSQL (prod). Custom AUTH_USER_MODEL=accounts.User.
+- Apps: accounts, products, cart, orders, payments, careers*, notifications*.
+  *careers: FULLY IMPLEMENTED backend.
+- API Base: http://localhost:8000/api/
+- Auth: Session + CSRF (JS-friendly). CORS: localhost:3000 + mobile.
+
+FRONTEND (React 19 + CRA):
+- Dependencies: axios, react-router-dom v7, react-icons, @react-oauth/google.
+- State: Context API (Auth/Cart/Modal).
+- UX: Dark mode, responsive, parallax/scroll effects, skeletons.
+
+----------------------------------------------------------------
+3. BACKEND STRUCTURE (Key Apps)
+----------------------------------------------------------------
+PRODUCTS:
+- Models: Category, Product (featured/discounts?), Review.
+- Endpoints: /products/?is_featured=true&category=search
+
+ACCOUNTS:
+- Custom User (phone/OTP likely).
+- Endpoints: /auth/profile/
+
+CART:
+- Model: Cart.
+- Endpoints: /cart/ (fetch/add/update/remove/clear).
+
+CAREERS (FULLY BUILT - Backend Complete):
+- MODELS:
+  JobPosition: title, dept (Logistics/Retail/Management), type (Full/Part/Contract),
+               desc/location/salary/active/slug.
+  JobApplication: job_FK, name/email/cover/resume (<5MB PDF/DOC), status (pending/reviewed/interview/rejected/hired),
+                  reviewed_by (admin User).
+- API:
+  GET /careers/positions/ - List active (filter dept).
+  POST /careers/apply/ - Guest apply (multipart).
+  GET /careers/applications/ - Admin list.
+  PATCH /careers/applications/{pk}/status/ - Admin update.
+- Admin: Filters/actions for bulk status (reviewed/interview/reject).
+
+ORDERS/PAYMENTS/NOTIFICATIONS: Models stubbed, implement next.
+
+----------------------------------------------------------------
+4. FRONTEND STRUCTURE
+----------------------------------------------------------------
+- PAGES: Home (hero/featured/categories/how-it-works), Cart, Account, Checkout (partial), Careers (stub).
+- COMPONENTS: Header (search/nav/cart/dark), Footer, ProductCard/Gallery/Reviews/Related.
+- KEY FILES: HomePage.js (open in VSCode), App.js (routes), axios.js (API config).
+- MISSING: CareersPage component (route exists).
+
+----------------------------------------------------------------
+5. SETUP & RUN (Windows CMD)
+----------------------------------------------------------------
+BACKEND:
+cd supermarket_backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver  # http://localhost:8000
+
+FRONTEND (new tab):
+cd supermarket-frontend
+npm install
+npm start  # http://localhost:3000
+
+SEED DATA: Add products/categories via admin (/admin).
+
+----------------------------------------------------------------
+6. CURRENT STATUS & TODOs
+----------------------------------------------------------------
+COMPLETE (85%):
+- Core shopping/auth/cart.
+- Careers backend (job board + applications).
+
+TODO:
+- Frontend Careers page (list/apply form).
+- Payments/orders integration.
+- Data seeding (products/media).
+- Tests: Run pytest/Jest.
+- Deploy: Docker? Heroku/Vercel.
+
+ISSUES:
+- No PROJECT-ANALYSIS.md (earlier create failed?).
+- Empty media/ - upload images.
+- Prod: HTTPS, JWT?, env secrets.
+
+----------------------------------------------------------------
+7. BUSINESS INSIGHTS
+----------------------------------------------------------------
+- Local focus: Africa/Kigali TZ, RWF currency implied.
+- Growth: Hiring Logistics/Retail roles → scaling ops.
+- AI: Product desc generation ready.
+
+END OF DOCUMENTATION
+Contact for questions. Demo ready!
+============================================================

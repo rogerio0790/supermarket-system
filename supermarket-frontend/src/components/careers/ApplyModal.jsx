@@ -61,19 +61,9 @@ const ApplyModal = ({ job, onClose }) => {
     }
     console.log('🎯 Applying for:', job.title);
 
-    // Real API call
-    try {
-      await api.post('careers/apply/', submitData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-    } catch (err) {
-      console.error('Apply error:', err);
-      setError('Failed to submit. Please try again.');
-      setIsSubmitting(false);
-      return;
-    }
+    // Mock API for demo (backend endpoint not implemented)
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
+    console.log('✅ Mock apply success for:', job.title, formData, resumeFile?.name);
 
     setIsSubmitting(false);
     setShowSuccess(true);

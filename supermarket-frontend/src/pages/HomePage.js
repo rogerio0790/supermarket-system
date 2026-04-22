@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { FaMapMarkedAlt, FaSearch, FaShoppingCart, FaCreditCard, FaTruck } from 'react-icons/fa';
+import { FiZap } from 'react-icons/fi';
 import Header from '../components/common/Header';
 import ProductCard from '../components/products/ProductCard';
 import CategoryCard from '../components/products/CategoryCard';
-import { SkeletonCard, SkeletonCategoryCard } from '../components/common/Skeleton';
+import { SkeletonCard } from '../components/common/Skeleton';
 import api from '../api/axios';
 import './HomePage.css';
 import heroImage from '../background.jpeg';
-//import heroImage from '../background2.jpg';
-import { FiZap, FiTruck } from 'react-icons/fi';
-
 
 function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -39,6 +38,13 @@ function HomePage() {
     fetchData();
   }, []);
 
+  const steps = [
+    { icon: FaSearch, number: 1, title: 'Search Products', desc: 'Browse our catalog' },
+    { icon: FaShoppingCart, number: 2, title: 'Add to Cart', desc: 'Select your items' },
+    { icon: FaCreditCard, number: 3, title: 'Secure Payment', desc: 'Pay safely' },
+    { icon: FaTruck, number: 4, title: 'Fast Delivery', desc: 'Get it delivered' }
+  ];
+
   return (
     <div className="home-page">
       <Header />
@@ -47,14 +53,14 @@ function HomePage() {
       <section className="hero-section">
         <div className="hero-container">
           <div className="hero-content">
-            <div className="weekend-badge"><i>We are hiring!</i></div>
+            <div className="weekend-badge">We are hiring!</div>
             <h1 className="hero-title">
-             WELCOME TO RUKARA SUPERMARKET<br />
+              WELCOME TO RUKARA SUPERMARKET<br />
               <span className="hero-title-highlight">Musanze's Premier Marketplace</span>
             </h1>
             <p className="hero-description">
-             Your one-stop shop for fresh foods, beverages, household essentials, and more at unbeatable prices.
-             Shop with us for quality, affordability, and convenience!
+              Your one-stop shop for fresh foods, beverages, household essentials, and more at unbeatable prices.
+              Shop with us for quality, affordability, and convenience!
             </p>
             <div className="hero-buttons">
               <button className="btn-shop-now">Shop Now</button>
@@ -65,7 +71,7 @@ function HomePage() {
                 <FiZap size={18} /> 30-min delivery
               </div>
               <div className="feature-item">
-                <FiTruck size={18} /> Free above 50,000 Rwf
+                <FaTruck size={18} /> Free above 50,000 Rwf
               </div>
             </div>
           </div>
@@ -87,7 +93,7 @@ function HomePage() {
             <p>Handpicked fresh items just for you</p>
           </div>
 
-                    {loading && (
+          {loading && (
             <div className="products-grid">
               {Array.from({ length: 8 }).map((_, index) => (
                 <SkeletonCard key={index} />
@@ -117,6 +123,30 @@ function HomePage() {
         </div>
       </section>
 
+      {/* How it Works Section - AFTER Featured Products */}
+      <section className="how-it-works-section">
+        <div className="section-container">
+          <div className="section-header">
+            <h2>How It Works</h2>
+            <p>Simple 5-step shopping experience</p>
+          </div>
+          <div className="how-it-works">
+            {steps.map((step, index) => (
+              <div key={index} className="step-item">
+                <div className="step-number">{step.number}</div>
+                <div className="step-circle">
+                  <step.icon size={24} />
+                </div>
+                <div className="step-content">
+                  <h4>{step.title}</h4>
+                  <p>{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Shop by Category Section */}
       <section className="categories-section">
         <div className="section-container">
@@ -124,12 +154,6 @@ function HomePage() {
             <h2>Shop by Category</h2>
             <p>Explore our wide range of premium products by department</p>
           </div>
-
-          {loading && (
-            <div className="loading-state">
-              <p>Loading categories...</p>
-            </div>
-          )}
 
           {!loading && !error && categories.length > 0 && (
             <div className="categories-grid">
@@ -145,3 +169,4 @@ function HomePage() {
 }
 
 export default HomePage;
+

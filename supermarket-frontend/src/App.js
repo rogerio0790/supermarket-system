@@ -18,6 +18,7 @@ import AccountPage from './pages/AccountPage';
 import Footer from './components/common/Footer';
 import AuthModals from './components/common/AuthModals';
 import OrderConfirmationModal from './components/common/OrderConfirmationModal';
+import Careers from './pages/Careers';
 
 function AppContent() {
   const { authModal, closeAuthModal, orderModal, closeOrderModal } = useModal();
@@ -37,6 +38,7 @@ function AppContent() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/careers" element={<Careers />} />
         </Routes>
       </main>
       <Footer />

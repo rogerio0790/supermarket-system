@@ -6,6 +6,7 @@ from .views import (
     ProductDetailView,
     FeaturedProductListView,
     CategoryProductListView,
+    ProductReviewsView,
     generate_ai_description
 )
 
@@ -20,8 +21,10 @@ urlpatterns = [
     path('products/', ProductListView.as_view(), name='product-list'),
     path('products/featured/', FeaturedProductListView.as_view(), name='featured-products'),
     path('products/<slug:slug>/', ProductDetailView.as_view(), name='product-detail'),
+    path('products/<slug:slug>/reviews/', ProductReviewsView.as_view(), name='product-reviews'),
     path('products/<slug:slug>/ai-description/', generate_ai_description, name='ai-description'),
     
     # Products by category
     path('categories/<slug:category_slug>/products/', CategoryProductListView.as_view(), name='category-products'),
 ]
+

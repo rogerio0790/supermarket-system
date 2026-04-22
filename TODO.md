@@ -1,31 +1,22 @@
-# TODO: Fix CORS blocking API calls (Profile 403 & products not loading)
+# Product Reviews Implementation TODO
 
-## Steps:
-1. [x] **Edit CORS settings** in `supermarket_backend/config/settings.py` (done):
-   - Add `'http://172.20.10.3:3000'` to `CORS_ALLOWED_ORIGINS`
-   - Add `'http://172.20.10.3:3000'` to `CSRF_TRUSTED_ORIGINS`
+## Backend Changes
+- [ ] 1. Update products/models.py - Add Review model
+- [ ] 2. Update products/serializers.py - Add ReviewSerializer, update ProductDetailSerializer
+- [ ] 3. Update products/views.py - Add ReviewListCreateView
+- [ ] 4. Update products/urls.py - Add reviews endpoint
+- [ ] 5. Create products/admin.py - Register Review
 
-2. [ ] **Restart Django server**:
-   ```
-   cd supermarket_backend
-   python manage.py runserver
-   ```
+## Database
+- [ ] 6. Run: cd supermarket_backend && python manage.py makemigrations products && python manage.py migrate
 
-3. [ ] **Test frontend** (http://172.20.10.3:3000):
-   - Refresh page
-   - Check products/categories load
-   - Navigate to Account → should fetch profile (login first if needed)
+## Frontend
+- [ ] 7. Create src/components/products/ProductReviews.jsx - Fetch/display/write reviews
+- [ ] 8. Update pages/ProductDetailPage.js - Dynamic ratings, fix components
+- [ ] 9. Update styles/ProductDetailPage.css - Reviews styling
 
-4. [ ] **Verify user active** (if still 403 after CORS fix):
-   ```
-   cd supermarket_backend
-   python manage.py shell
-   ```
-   ```python
-   from accounts.models import User
-   user = User.objects.first()  # or get(email='...')
-   user.is_active = True
-   user.save()
-   ```
+## Testing
+- [ ] 10. Backend: Test API endpoints (list/create reviews)
+- [ ] 11. Frontend: cd supermarket-frontend && npm start, test review write/display (login required)
+- [ ] 12. Add sample data via admin, verify average rating calculation
 
-5. [ ] Mark complete

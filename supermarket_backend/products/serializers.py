@@ -1,10 +1,8 @@
 from rest_framework import serializers
-from .models import Category, Product
+from .models import Category, Product, Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Serializer for Category model"""
-    
     products_count = serializers.SerializerMethodField()
     
     class Meta:
@@ -25,9 +23,9 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
-    """Serializer for Product list view"""
-    
     category_name = serializers.CharField(source='category.name', read_only=True)
+    avg_rating = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -45,15 +43,23 @@ class ProductListSerializer(serializers.ModelSerializer):
             'stock',
             'is_in_stock',
             'unit',
-            'is_featured'
+            'is_featured',
+            'avg_rating',
+            'review_count'
         ]
+    
+    def get_avg_rating(self, obj):
+        return obj.avg_rating
+    
+    def get_review_count(self, obj):
+        return obj.review_count
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    """Serializer for Product detail view"""
-    
     category_name = serializers.CharField(source='category.name', read_only=True)
     category_slug = serializers.CharField(source='category.slug', read_only=True)
+    avg_rating = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -75,6 +81,40 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'unit',
             'sku',
             'is_featured',
+            'avg_rating',
+            'review_count',
             'created_at',
             'updated_at'
         ]
+    
+    def get_avg_rating(self, obj):
+        return obj.avg_rating
+    
+    def get_review_count(self, obj):
+        return obj.review_count
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+    product_slug = serializers.CharField(source='product.slug', read_only=True)
+    
+    class Meta:
+        model = Review
+        fields = [
+            'id', 
+            'rating', 
+            'comment', 
+            'user', 
+            'user_name', 
+            'product_slug', 
+            'created_at'
+        ]
+        read_only_fields = ['id', 'user', 'created_at']
+    
+    def get_user_name(self, obj):
+        return obj.user.get_full_name() or obj.user.email
+    
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+

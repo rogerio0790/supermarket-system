@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   FaStar, 
@@ -39,15 +39,12 @@ function ProductDetailPage() {
   const [aiDescription, setAiDescription] = useState('');
   const [generatingAI, setGeneratingAI] = useState(false);
 
-  useEffect(() => {
-    fetchProduct();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
-
-  const fetchProduct = async () => {
+  // FIX 1: useCallback so useEffect dependency is stable
+  const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get(`products/${slug}/`);
+      // FIX 2: added leading slash to prevent wrong URL construction
+      const response = await api.get(`/products/${slug}/`);
       setProduct(response.data);
       setError(null);
     } catch (err) {
@@ -56,7 +53,11 @@ function ProductDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]); // FIX 3: no more eslint-disable needed
 
   const handleQuantityChange = (action) => {
     if (action === 'increase' && quantity < product.stock) {
@@ -71,7 +72,6 @@ function ProductDetailPage() {
       openAuthModal('login');
       return;
     }
-
     const result = await addToCart(product.id, quantity);
     if (result.success) {
       alert('Added to cart successfully!');
@@ -86,7 +86,6 @@ function ProductDetailPage() {
       openAuthModal('login');
       return;
     }
-
     const result = await addToCart(product.id, quantity);
     if (result.success) {
       navigate('/checkout');
@@ -96,18 +95,17 @@ function ProductDetailPage() {
   const handleGenerateAIDescription = async () => {
     setGeneratingAI(true);
     setAiDescription('');
-    
     try {
-      const response = await api.post(`products/${product.slug}/ai-description/`);
-      
+      // FIX 4: added leading slash
+      const response = await api.post(`/products/${product.slug}/ai-description/`);
       if (response.data.success) {
         setAiDescription(response.data.ai_description);
       } else {
         alert(response.data.error || 'Failed to generate AI description. Please try again.');
       }
-    } catch (error) {
-      console.error('AI generation error:', error);
-      const errorMsg = error.response?.data?.error || 'Failed to generate AI description. Please try again.';
+    } catch (err) {
+      console.error('AI generation error:', err);
+      const errorMsg = err.response?.data?.error || 'Failed to generate AI description. Please try again.';
       alert(errorMsg);
     } finally {
       setGeneratingAI(false);
@@ -144,6 +142,12 @@ function ProductDetailPage() {
     );
   }
 
+  // FIX 5: parseFloat to handle Django DecimalField returning a string
+  const avgRating = parseFloat(product.avg_rating) || 0;
+  const reviewCount = product.review_count || 0;
+  const filledStars = Math.floor(avgRating);
+  const hasHalfStar = avgRating % 1 >= 0.5;
+
   return (
     <>
       <div className="product-detail-page">
@@ -178,14 +182,24 @@ function ProductDetailPage() {
               <div className="product-brand">{product.category_name}</div>
               <h1 className="product-name">{product.name}</h1>
               
-              {/* Rating */}
+              {/* FIX 6: conditional color so empty stars render grey */}
               <div className="product-rating">
                 <div className="stars">
                   {[...Array(5)].map((_, i) => (
-                    <FaStar key={i} color="#ffc107" size={20} />
+                    <FaStar 
+                      key={i} 
+                      size={20}
+                      color={
+                        i < filledStars || (i === filledStars && hasHalfStar)
+                          ? '#ffc107'
+                          : '#e0e0e0'
+                      }
+                    />
                   ))}
                 </div>
-                <span className="rating-count">4.5 (128 reviews)</span>
+                <span className="rating-count">
+                  {avgRating.toFixed(1)} ({reviewCount} review{reviewCount !== 1 ? 's' : ''})
+                </span>
               </div>
 
               {/* Price */}
@@ -211,7 +225,6 @@ function ProductDetailPage() {
                 )}
               </div>
 
-              {/* Stock Status */}
               <div className="stock-info">
                 {product.is_in_stock ? (
                   <div className="in-stock">
@@ -288,6 +301,10 @@ function ProductDetailPage() {
                         <td className="discount-highlight">{product.discount_percentage}% OFF</td>
                       </tr>
                     )}
+                    <tr>
+                      <td>Avg Rating</td>
+                      <td>{avgRating.toFixed(1)} / 5 ({reviewCount} reviews)</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -319,7 +336,6 @@ function ProductDetailPage() {
 
                 {product.is_in_stock && (
                   <>
-                    {/* Quantity Selector */}
                     <div className="quantity-selector">
                       <label>Quantity:</label>
                       <div className="quantity-controls">
@@ -339,7 +355,6 @@ function ProductDetailPage() {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="purchase-actions">
                       <button 
                         onClick={handleAddToCart}
@@ -364,7 +379,6 @@ function ProductDetailPage() {
                   </div>
                 )}
 
-                {/* Trust Badges */}
                 <div className="trust-badges">
                   <div className="badge">
                     <FaLock />
@@ -384,7 +398,7 @@ function ProductDetailPage() {
           </div>
 
           {/* Reviews Section */}
-          <ProductReviews productId={product.id} />
+          <ProductReviews slug={product.slug} />
 
           {/* Related Products */}
           <RelatedProducts 

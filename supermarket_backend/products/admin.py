@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product
+from .models import Category, Product, Review
 
 
 @admin.register(Category)
@@ -21,6 +21,8 @@ class ProductAdmin(admin.ModelAdmin):
         'stock', 
         'is_active', 
         'is_featured',
+        'avg_rating',
+        'review_count',
         'created_at'
     ]
     list_filter = ['category', 'is_active', 'is_featured', 'created_at']
@@ -42,3 +44,15 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('is_active', 'is_featured')
         }),
     )
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ['product', 'user', 'rating', 'comment_preview', 'created_at']
+    list_filter = ['rating', 'created_at', 'product', 'user']
+    search_fields = ['comment', 'user__email', 'user__first_name', 'product__name']
+    
+    def comment_preview(self, obj):
+        return obj.comment[:50] + '...' if obj.comment else 'No comment'
+    comment_preview.short_description = 'Comment Preview'
+

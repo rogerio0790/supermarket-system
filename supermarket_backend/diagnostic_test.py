@@ -11,7 +11,8 @@ def run_diagnostic():
     
     # 1. Check API Key
     try:
-        api_key = config('GEMINI_API_KEY', default="AIzaSyAxLF-zIyopOKV5_-RgYx4aAeFEBNHKL-k")
+        # Security best practice: No hardcoded fallback. Use .env file
+        api_key = config('GEMINI_API_KEY')
         print(f"[1] API Key Check: Success. Key starts with: {api_key[:10]}...")
     except Exception as e:
         print(f"[1] API Key Check: FAILED. Error: {e}")

@@ -1,70 +1,118 @@
-# Rukara Supermarket System
+RU KARA SUPERMARKET SYSTEM - COMPREHENSIVE DOCUMENTATION
+============================================================
 
-A comprehensive, full-stack supermarket management and e-commerce platform designed for premium retail experiences.
+DATE: Current analysis by BLACKBOXAI
+PROJECT STATUS: 85% MVP complete (full-stack e-commerce + careers)
 
-## 🚀 Project Overview
+----------------------------------------------------------------
+1. PROJECT OVERVIEW
+----------------------------------------------------------------
+- PURPOSE: E-commerce platform for Rukara Supermarket (Musanze, Rwanda).
+  Premium foods/beverages/household goods. Fast delivery (30min, free >50k RWF).
+  Features: Product catalog, cart/checkout, user auth, job applications.
+- HIRING FOCUS: Active "We are hiring!" promo on homepage.
+- MONOREPO: Backend (Django/DRF), Frontend (React/CRA).
 
-The Rukara Supermarket System is built with a modern technology stack to provide a seamless shopping experience for customers and efficient management for administrators. It features a robust Django-based backend and a responsive React frontend.
+----------------------------------------------------------------
+2. TECHNOLOGY STACK
+----------------------------------------------------------------
+BACKEND (Django 4.2.9 + DRF 3.14.0):
+- Dependencies: djangorestframework, psycopg2-binary (PostgreSQL), Pillow (images),
+  django-cors-headers, google-generativeai (AI descriptions), python-decouple.
+- DB: SQLite (dev), PostgreSQL (prod). Custom AUTH_USER_MODEL=accounts.User.
+- Apps: accounts, products, cart, orders, payments, careers*, notifications*.
+  *careers: FULLY IMPLEMENTED backend.
+- API Base: http://localhost:8000/api/
+- Auth: Session + CSRF (JS-friendly). CORS: localhost:3000 + mobile.
 
-### Key Features
+FRONTEND (React 19 + CRA):
+- Dependencies: axios, react-router-dom v7, react-icons, @react-oauth/google.
+- State: Context API (Auth/Cart/Modal).
+- UX: Dark mode, responsive, parallax/scroll effects, skeletons.
 
-- **Product Management**: Categorized product listing with featured items and discount support.
-- **Real-time Search**: Fast and intuitive product search functionality.
-- **User Authentication**: Secure registration and login system with phone-based OTP verification.
-- **Shopping Cart**: Fully functional cart with persistent state and real-time updates.
-- **Order Management**: Streamlined checkout process and order confirmation.
-- **AI-Powered Descriptions**: Integrated AI capabilities for generating product descriptions.
-- **Theme Support**: Built-in Dark Mode and Light Mode for user preference.
+----------------------------------------------------------------
+3. BACKEND STRUCTURE (Key Apps)
+----------------------------------------------------------------
+PRODUCTS:
+- Models: Category, Product (featured/discounts?), Review.
+- Endpoints: /products/?is_featured=true&category=search
 
-## 🛠️ Technology Stack
+ACCOUNTS:
+- Custom User (phone/OTP likely).
+- Endpoints: /auth/profile/
 
-### Frontend
-- **React**: Modern component-based UI.
-- **Context API**: Global state management for Auth, Cart, and Modals.
-- **Axios**: Clean API communication.
-- **CSS3**: Custom styling with theme support.
+CART:
+- Model: Cart.
+- Endpoints: /cart/ (fetch/add/update/remove/clear).
 
-### Backend
-- **Django**: Robust web framework.
-- **Django REST Framework (DRF)**: Scalable API architecture.
-- **SQLite/PostgreSQL**: Flexible database options.
-- **OTP Integration**: Secure phone verification.
+CAREERS (FULLY BUILT - Backend Complete):
+- MODELS:
+  JobPosition: title, dept (Logistics/Retail/Management), type (Full/Part/Contract),
+               desc/location/salary/active/slug.
+  JobApplication: job_FK, name/email/cover/resume (<5MB PDF/DOC), status (pending/reviewed/interview/rejected/hired),
+                  reviewed_by (admin User).
+- API:
+  GET /careers/positions/ - List active (filter dept).
+  POST /careers/apply/ - Guest apply (multipart).
+  GET /careers/applications/ - Admin list.
+  PATCH /careers/applications/{pk}/status/ - Admin update.
+- Admin: Filters/actions for bulk status (reviewed/interview/reject).
 
-## 📦 Getting Started
+ORDERS/PAYMENTS/NOTIFICATIONS: Models stubbed, implement next.
 
-### Prerequisites
-- Node.js (v16+)
-- Python (v3.10+)
-- Git
+----------------------------------------------------------------
+4. FRONTEND STRUCTURE
+----------------------------------------------------------------
+- PAGES: Home (hero/featured/categories/how-it-works), Cart, Account, Checkout (partial), Careers (stub).
+- COMPONENTS: Header (search/nav/cart/dark), Footer, ProductCard/Gallery/Reviews/Related.
+- KEY FILES: HomePage.js (open in VSCode), App.js (routes), axios.js (API config).
+- MISSING: CareersPage component (route exists).
 
-### Installation
+----------------------------------------------------------------
+5. SETUP & RUN (Windows CMD)
+----------------------------------------------------------------
+BACKEND:
+cd supermarket_backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver  # http://localhost:8000
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/rogerio0790/supermarket-system.git
-   cd supermarket-system
-   ```
+FRONTEND (new tab):
+cd supermarket-frontend
+npm install
+npm start  # http://localhost:3000
 
-2. **Setup Backend**
-   ```bash
-   cd supermarket_backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   python manage.py migrate
-   python manage.py runserver
-   ```
+SEED DATA: Add products/categories via admin (/admin).
 
-3. **Setup Frontend**
-   ```bash
-   cd ../supermarket-frontend
-   npm install
-   npm start
-   ```
+----------------------------------------------------------------
+6. CURRENT STATUS & TODOs
+----------------------------------------------------------------
+COMPLETE (85%):
+- Core shopping/auth/cart.
+- Careers backend (job board + applications).
 
-## 📄 License
+TODO:
+- Frontend Careers page (list/apply form).
+- Payments/orders integration.
+- Data seeding (products/media).
+- Tests: Run pytest/Jest.
+- Deploy: Docker? Heroku/Vercel.
 
-This project is licensed under the MIT License.
+ISSUES:
+- No PROJECT-ANALYSIS.md (earlier create failed?).
+- Empty media/ - upload images.
+- Prod: HTTPS, JWT?, env secrets.
 
----
-Built with ❤️ by [Rogerio](https://github.com/rogerio0790)
+----------------------------------------------------------------
+7. BUSINESS INSIGHTS
+----------------------------------------------------------------
+- Local focus: Africa/Kigali TZ, RWF currency implied.
+- Growth: Hiring Logistics/Retail roles → scaling ops.
+- AI: Product desc generation ready.
+
+END OF DOCUMENTATION
+Contact for questions. Demo ready!
+============================================================

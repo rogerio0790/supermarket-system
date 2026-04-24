@@ -25,7 +25,7 @@ WORKDIR /app/supermarket_backend
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-EXPOSE 8000
+EXPOSE 8080
 
 # Run migrations then start gunicorn
-CMD ["sh", "-c", "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8080"]

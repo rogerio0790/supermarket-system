@@ -1,118 +1,83 @@
-RU KARA SUPERMARKET SYSTEM - COMPREHENSIVE DOCUMENTATION
-============================================================
+# Rukara Supermarket System
 
-DATE: Current analysis by BLACKBOXAI
-PROJECT STATUS: 85% MVP complete (full-stack e-commerce + careers)
+A full-stack e-commerce and recruitment platform built for a local supermarket in Musanze, Rwanda.  
+The system enables customers to browse and purchase products while also supporting internal hiring through an integrated careers module.
 
-----------------------------------------------------------------
-1. PROJECT OVERVIEW
-----------------------------------------------------------------
-- PURPOSE: E-commerce platform for Rukara Supermarket (Musanze, Rwanda).
-  Premium foods/beverages/household goods. Fast delivery (30min, free >50k RWF).
-  Features: Product catalog, cart/checkout, user auth, job applications.
-- HIRING FOCUS: Active "We are hiring!" promo on homepage.
-- MONOREPO: Backend (Django/DRF), Frontend (React/CRA).
+---
 
-----------------------------------------------------------------
-2. TECHNOLOGY STACK
-----------------------------------------------------------------
-BACKEND (Django 4.2.9 + DRF 3.14.0):
-- Dependencies: djangorestframework, psycopg2-binary (PostgreSQL), Pillow (images),
-  django-cors-headers, google-generativeai (AI descriptions), python-decouple.
-- DB: SQLite (dev), PostgreSQL (prod). Custom AUTH_USER_MODEL=accounts.User.
-- Apps: accounts, products, cart, orders, payments, careers*, notifications*.
-  *careers: FULLY IMPLEMENTED backend.
-- API Base: http://localhost:8000/api/
-- Auth: Session + CSRF (JS-friendly). CORS: localhost:3000 + mobile.
+## Overview
 
-FRONTEND (React 19 + CRA):
-- Dependencies: axios, react-router-dom v7, react-icons, @react-oauth/google.
-- State: Context API (Auth/Cart/Modal).
-- UX: Dark mode, responsive, parallax/scroll effects, skeletons.
+Rukara Supermarket System is designed to simulate real-world business operations by combining:
 
-----------------------------------------------------------------
-3. BACKEND STRUCTURE (Key Apps)
-----------------------------------------------------------------
-PRODUCTS:
-- Models: Category, Product (featured/discounts?), Review.
-- Endpoints: /products/?is_featured=true&category=search
+- Online shopping experience (product browsing, cart, checkout)
+- User authentication and account management
+- Recruitment workflow for job applications
+- Scalable REST API architecture
 
-ACCOUNTS:
-- Custom User (phone/OTP likely).
-- Endpoints: /auth/profile/
+This project goes beyond a typical e-commerce application by integrating both **sales and hiring workflows** into a single system.
 
-CART:
-- Model: Cart.
-- Endpoints: /cart/ (fetch/add/update/remove/clear).
+---
 
-CAREERS (FULLY BUILT - Backend Complete):
-- MODELS:
-  JobPosition: title, dept (Logistics/Retail/Management), type (Full/Part/Contract),
-               desc/location/salary/active/slug.
-  JobApplication: job_FK, name/email/cover/resume (<5MB PDF/DOC), status (pending/reviewed/interview/rejected/hired),
-                  reviewed_by (admin User).
-- API:
-  GET /careers/positions/ - List active (filter dept).
-  POST /careers/apply/ - Guest apply (multipart).
-  GET /careers/applications/ - Admin list.
-  PATCH /careers/applications/{pk}/status/ - Admin update.
-- Admin: Filters/actions for bulk status (reviewed/interview/reject).
+## Key Features
 
-ORDERS/PAYMENTS/NOTIFICATIONS: Models stubbed, implement next.
+### E-commerce
+- Product catalog with categories and search
+- Add to cart, update, and remove items
+- User authentication and profile management
+- Responsive user interface with modern design
 
-----------------------------------------------------------------
-4. FRONTEND STRUCTURE
-----------------------------------------------------------------
-- PAGES: Home (hero/featured/categories/how-it-works), Cart, Account, Checkout (partial), Careers (stub).
-- COMPONENTS: Header (search/nav/cart/dark), Footer, ProductCard/Gallery/Reviews/Related.
-- KEY FILES: HomePage.js (open in VSCode), App.js (routes), axios.js (API config).
-- MISSING: CareersPage component (route exists).
+### Careers Module (Core Feature)
+- Job listings with filtering (department, type)
+- Guest application submission with resume upload
+- Admin review workflow with status tracking:
+  - Pending
+  - Reviewed
+  - Interview
+  - Rejected
+  - Hired
 
-----------------------------------------------------------------
-5. SETUP & RUN (Windows CMD)
-----------------------------------------------------------------
-BACKEND:
-cd supermarket_backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver  # http://localhost:8000
+### System Capabilities
+- RESTful API using Django REST Framework
+- Modular backend structure (accounts, products, cart, careers)
+- Dynamic frontend using React and Context API
+- AI-assisted product description generation
 
-FRONTEND (new tab):
-cd supermarket-frontend
-npm install
-npm start  # http://localhost:3000
+---
 
-SEED DATA: Add products/categories via admin (/admin).
+## Tech Stack
 
-----------------------------------------------------------------
-6. CURRENT STATUS & TODOs
-----------------------------------------------------------------
-COMPLETE (85%):
-- Core shopping/auth/cart.
-- Careers backend (job board + applications).
+### Backend
+- Django 4.x
+- Django REST Framework
+- PostgreSQL (Production) / SQLite (Development)
+- Pillow (image handling)
 
-TODO:
-- Frontend Careers page (list/apply form).
-- Payments/orders integration.
-- Data seeding (products/media).
-- Tests: Run pytest/Jest.
-- Deploy: Docker? Heroku/Vercel.
+### Frontend
+- React (Create React App)
+- Axios (API communication)
+- React Router
+- Context API (state management)
 
-ISSUES:
-- No PROJECT-ANALYSIS.md (earlier create failed?).
-- Empty media/ - upload images.
-- Prod: HTTPS, JWT?, env secrets.
+### Other Tools
+- Google Generative AI
+- django-cors-headers
 
-----------------------------------------------------------------
-7. BUSINESS INSIGHTS
-----------------------------------------------------------------
-- Local focus: Africa/Kigali TZ, RWF currency implied.
-- Growth: Hiring Logistics/Retail roles → scaling ops.
-- AI: Product desc generation ready.
+---
 
-END OF DOCUMENTATION
-Contact for questions. Demo ready!
-============================================================
+## Screenshots
+
+![home](image.png)
+![imag2 ](image-1.png)
+![img3](image-2.png)
+![img4](image-3.png)
+![img5](image-4.png)
+![register](image-5.png)
+![login](image-6.png)
+![profile](image-7.png)
+![product_detail](image-8.png)
+![adding to cart](image-9.png)
+![alt text](cart)
+![checkout](image-11.png)
+![confirimation](image-12.png)
+![carreers](image-13.png)
+![submitted](image-14.png)
